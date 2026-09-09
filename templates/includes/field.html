@@ -1,0 +1,16 @@
+{% load dsg %}
+<div class="field {% if field.errors %}field--invalid{% endif %} {{ wrapper_class }}">
+  {% if field.field.widget.input_type == 'checkbox' %}
+    <div class="field--check">
+      {{ field }}
+      <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+    </div>
+  {% else %}
+    <label class="field__label" for="{{ field.id_for_label }}">
+      {{ field.label }}{% if field.field.required %} <span style="color:var(--brand-gold-dark)">*</span>{% endif %}
+    </label>
+    {{ field }}
+  {% endif %}
+  {% if field.help_text %}<div class="field__help">{{ field.help_text }}</div>{% endif %}
+  {% for error in field.errors %}<div class="field__error">{{ error }}</div>{% endfor %}
+</div>

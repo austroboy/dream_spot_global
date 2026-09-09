@@ -1,0 +1,140 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% load dsg %}
+{% block page_title %}{{ lead.full_name }}{% endblock %}
+{% block dash_content %}
+<div class="detail-grid">
+  <div>
+    <div class="panel panel--gold">
+      <div class="panel__head">
+        <h2>{{ lead.full_name }}</h2>
+        <span class="badge badge--{{ lead.status|status_class }}">{{ lead.get_status_display }}</span>
+      </div>
+      <div class="panel__body">
+        <dl class="def-list">
+          <dt>Phone</dt><dd><a href="tel:{{ lead.phone }}">{{ lead.phone }}</a></dd>
+          <dt>Email</dt><dd><a href="mailto:{{ lead.email }}">{{ lead.email }}</a></dd>
+          <dt>Destinations</dt><dd>{{ lead.destination_names }}</dd>
+          <dt>Study level</dt><dd>{{ lead.get_study_level_display|default:"—" }}</dd>
+          <dt>Intake</dt><dd>{{ lead.get_intended_intake_display|default:"—" }}</dd>
+          <dt>Qualification</dt><dd>{{ lead.last_qualification|default:"—" }}{% if lead.gpa %} (GPA {{ lead.gpa }}){% endif %}</dd>
+          <dt>English</dt><dd>{{ lead.get_english_test_display }}{% if lead.english_score %} — {{ lead.english_score }}{% endif %}</dd>
+          <dt>Source</dt><dd>{{ lead.get_source_display }} <span class="small muted">{{ lead.source_page }}</span></dd>
+          <dt>Campaign</dt><dd class="small">{{ lead.utm_source|default:"—" }} / {{ lead.utm_campaign|default:"—" }}</dd>
+          <dt>Assigned to</dt><dd>{{ lead.assigned_to.full_name|default:"Unassigned" }}</dd>
+          <dt>Created</dt><dd>{{ lead.created_at|date:"d M Y, g:i A" }}</dd>
+        </dl>
+        {% if lead.message %}<p class="mt-24"><strong>Message:</strong><br>{{ lead.message|linebreaksbr }}</p>{% endif %}
+        {% if lead.assessment_result %}
+        <div class="mt-24"><h3 style="font-size:15px">Assessment result</h3>
+          <p class="small">Score: <strong>{{ lead.assessment_result.eligibility_score }}/100</strong></p></div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel__head"><h2>Notes</h2></div>
+      <div class="panel__body">
+        <form method="post" enctype="multipart/form-data" class="mb-24">
+          {% csrf_token %}<input type="hidden" name="action" value="note">
+          {% include "includes/form.html" with form=note_form %}
+          <button class="btn btn--primary btn--sm" type="submit">Add note</button>
+        </form>
+        <div class="stack">
+          {% for note in notes %}
+          <div style="border-left:3px solid var(--brand-gold);padding-left:14px">
+            <div class="small muted">{{ note.author|default:"System" }} • {{ note.created_at|date:"d M Y, g:i A" }}</div>
+            <div>{{ note.body|linebreaksbr }}</div>
+          </div>
+          {% empty %}<p class="muted small">No notes yet.</p>{% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel__head"><h2>Activity timeline</h2></div>
+      <div class="panel__body"><div class="timeline">
+        {% for a in activities %}
+        <div class="timeline__item is-done">
+          <div class="timeline__title">{{ a.summary }}</div>
+          <div class="timeline__meta">{{ a.get_activity_type_display }} • {{ a.actor|default:"System" }} • {{ a.created_at|date:"d M Y, g:i A" }}</div>
+          {% if a.detail %}<div class="small">{{ a.detail }}</div>{% endif %}
+        </div>
+        {% empty %}<p class="muted small">No activity recorded.</p>{% endfor %}
+      </div></div>
+    </div>
+  </div>
+
+  <aside>
+    <div class="panel">
+      <div class="panel__head"><h3>Update status</h3></div>
+      <div class="panel__body"><form method="post">
+        {% csrf_token %}<input type="hidden" name="action" value="status">
+        <div class="field"><select class="field__input field__select" name="status">
+          {% for v, l in statuses %}<option value="{{ v }}" {% if lead.status == v %}selected{% endif %}>{{ l }}</option>{% endfor %}
+        </select></div>
+        <div class="field"><input class="field__input" name="note" placeholder="Reason / note (optional)"></div>
+        <button class="btn btn--primary btn--block btn--sm" type="submit">Save status</button>
+      </form></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel__head"><h3>Log an interaction</h3></div>
+      <div class="panel__body"><form method="post">
+        {% csrf_token %}<input type="hidden" name="action" value="log">
+        <div class="field"><select class="field__input field__select" name="activity_type">
+          <option value="call">Call</option><option value="email">Email</option>
+          <option value="whatsapp">WhatsApp</option><option value="meeting">Meeting</option>
+        </select></div>
+        <div class="field"><input class="field__input" name="summary" placeholder="Summary" required></div>
+        <div class="field"><textarea class="field__input field__textarea" name="detail" placeholder="Details"></textarea></div>
+        <button class="btn btn--secondary btn--block btn--sm" type="submit">Log interaction</button>
+      </form></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel__head"><h3>Follow-up reminder</h3></div>
+      <div class="panel__body"><form method="post">
+        {% csrf_token %}<input type="hidden" name="action" value="follow_up">
+        <div class="field"><input class="field__input" type="datetime-local" name="next_follow_up"></div>
+        <button class="btn btn--secondary btn--block btn--sm" type="submit">Set reminder</button>
+      </form></div>
+    </div>
+
+    {% if can_reassign %}
+    <div class="panel">
+      <div class="panel__head"><h3>Assignment</h3></div>
+      <div class="panel__body"><form method="post">
+        {% csrf_token %}<input type="hidden" name="action" value="assign">
+        <div class="field"><select class="field__input field__select" name="assigned_to">
+          <option value="">Unassigned</option>
+          {% for s in counsellors %}<option value="{{ s.pk }}" {% if lead.assigned_to_id == s.pk %}selected{% endif %}>{{ s.full_name }}</option>{% endfor %}
+        </select></div>
+        <button class="btn btn--secondary btn--block btn--sm" type="submit">Reassign</button>
+      </form></div>
+    </div>
+    {% endif %}
+
+    {% if can_convert and lead.status != "converted" %}
+    <div class="panel panel--gold">
+      <div class="panel__head"><h3>Convert to student</h3></div>
+      <div class="panel__body">
+        <p class="small muted">Creates a student profile and emails portal credentials.</p>
+        <form method="post">
+          {% csrf_token %}<input type="hidden" name="action" value="convert">
+          <button class="btn btn--primary btn--block btn--sm" type="submit"
+                  data-confirm="Convert {{ lead.full_name }} into a student?">Convert to student</button>
+        </form>
+      </div>
+    </div>
+    {% endif %}
+
+    {% if user.is_admin_role %}
+    <div class="panel"><div class="panel__body"><form method="post">
+      {% csrf_token %}<input type="hidden" name="action" value="delete">
+      <button class="btn btn--danger btn--block btn--sm" type="submit"
+              data-confirm="Delete this lead? This is a soft delete.">Delete lead</button>
+    </form></div></div>
+    {% endif %}
+  </aside>
+</div>
+{% endblock %}

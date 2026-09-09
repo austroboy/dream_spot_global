@@ -1,0 +1,11 @@
+{% load static %}
+{# Favicon: an uploaded Site Settings favicon wins, otherwise the bundled logo.ico. #}
+{% if site.favicon %}
+  <link rel="icon" href="{{ site.favicon.url }}">
+  <link rel="shortcut icon" href="{{ site.favicon.url }}">
+{% else %}
+  <link rel="icon" href="{% static 'img/logo.ico' %}">
+  <link rel="shortcut icon" href="{% static 'img/logo.ico' %}">
+{% endif %}
+<link rel="apple-touch-icon" href="{% if site.logo %}{{ site.logo.url }}{% else %}{% static 'img/logo.ico' %}{% endif %}">
+<meta name="theme-color" content="#123A73">

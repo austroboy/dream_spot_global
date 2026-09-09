@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="section"><div class="container text-center" style="max-width:560px">
+  <span class="eyebrow">Error 500</span><h1>Something went wrong on our side</h1>
+  <p class="muted">Our team has been notified. Please try again in a few minutes.</p>
+  <a class="btn btn--primary" href="{% url 'core:home' %}">Back to homepage</a>
+</div></section>
+{% endblock %}

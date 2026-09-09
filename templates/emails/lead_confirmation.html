@@ -1,0 +1,22 @@
+<div style="font-family:Arial,Helvetica,sans-serif;max-width:600px;margin:0 auto;color:#14213D">
+  <div style="background:linear-gradient(135deg,#0C2751,#1E5099);padding:28px 24px;color:#fff">
+    <h1 style="margin:0;font-size:22px">Dream Spot Global</h1>
+    <p style="margin:6px 0 0;color:#F2A526;font-size:12px;letter-spacing:2px">
+      EDUCATION • CAREER • IMMIGRATION</p>
+  </div>
+  <div style="padding:28px 24px;background:#fff">
+    <p>Dear {{ lead.full_name }},</p>
+    <p>Thank you for contacting Dream Spot Global. We have received your enquiry and a
+       counsellor will contact you within one working day.</p>
+    <table style="width:100%;border-collapse:collapse;font-size:14px;margin:18px 0">
+      <tr><td style="padding:6px 0;color:#5B6B85">Destinations</td>
+          <td style="padding:6px 0"><strong>{{ lead.destination_names }}</strong></td></tr>
+      <tr><td style="padding:6px 0;color:#5B6B85">Study level</td>
+          <td style="padding:6px 0"><strong>{{ lead.get_study_level_display|default:"To be discussed" }}</strong></td></tr>
+      <tr><td style="padding:6px 0;color:#5B6B85">Reference</td>
+          <td style="padding:6px 0"><strong>DSG-L{{ lead.pk }}</strong></td></tr>
+    </table>
+    <p style="font-size:13px;color:#5B6B85">House 21, Road 01, Sector 9, Uttara, Dhaka<br>
+      +880 1410-157209 • dreamspotglobal@gmail.com</p>
+  </div>
+</div>

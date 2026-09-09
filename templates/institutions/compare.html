@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-hero"><div class="container">
+  <span class="eyebrow">Compare</span><h1>Compare courses</h1></div></section>
+<section class="section"><div class="container">
+  {% if courses %}
+  <div class="table-wrap"><table class="data compare">
+    <thead><tr><th>Criteria</th>{% for c in courses %}<th>{{ c.title|truncatechars:40 }}</th>{% endfor %}</tr></thead>
+    <tbody>
+      <tr><td><strong>University</strong></td>{% for c in courses %}<td>{{ c.university.name }}</td>{% endfor %}</tr>
+      <tr><td><strong>Country</strong></td>{% for c in courses %}<td>{{ c.university.country.name }}</td>{% endfor %}</tr>
+      <tr><td><strong>Level</strong></td>{% for c in courses %}<td>{{ c.get_study_level_display }}</td>{% endfor %}</tr>
+      <tr><td><strong>Duration</strong></td>{% for c in courses %}<td>{{ c.duration_display }}</td>{% endfor %}</tr>
+      <tr><td><strong>Tuition</strong></td>{% for c in courses %}<td>{{ c.tuition_display }}</td>{% endfor %}</tr>
+      <tr><td><strong>Scholarship</strong></td>{% for c in courses %}<td>{% if c.scholarship_available %}Yes{% else %}—{% endif %}</td>{% endfor %}</tr>
+      <tr><td></td>{% for c in courses %}<td><a class="btn btn--sm btn--primary" href="{{ c.get_absolute_url }}">View</a></td>{% endfor %}</tr>
+    </tbody></table></div>
+  {% else %}<div class="empty-state"><h3>Select courses from your shortlist to compare</h3>
+    <a class="btn btn--primary" href="{% url 'institutions:shortlist' %}">Go to shortlist</a></div>{% endif %}
+</div></section>
+{% endblock %}

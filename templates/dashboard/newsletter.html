@@ -1,0 +1,18 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block page_title %}Newsletter subscribers{% endblock %}
+{% block dash_content %}
+<div class="toolbar">
+  <span class="small muted">{{ page_obj.paginator.count }} subscribers</span>
+  <a class="btn btn--secondary btn--sm" href="?export=csv">Export CSV</a>
+</div>
+<div class="table-wrap"><table class="data">
+  <thead><tr><th>Email</th><th>Confirmed</th><th>Unsubscribed</th><th>Joined</th></tr></thead>
+  <tbody>{% for s in page_obj %}
+    <tr><td>{{ s.email }}</td>
+      <td>{% if s.is_confirmed %}<span class="tick">✓</span>{% else %}<span class="cross">✕</span>{% endif %}</td>
+      <td>{% if s.unsubscribed %}<span class="badge badge--danger">Yes</span>{% else %}—{% endif %}</td>
+      <td class="small">{{ s.created_at|date:"d M Y" }}</td></tr>
+  {% empty %}<tr><td colspan="4"><div class="empty-state"><h3>No subscribers yet</h3></div></td></tr>{% endfor %}
+  </tbody></table></div>
+{% include "includes/pagination.html" %}
+{% endblock %}

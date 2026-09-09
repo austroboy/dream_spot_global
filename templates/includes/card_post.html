@@ -1,0 +1,15 @@
+<article class="card">
+  <div class="card__media card__media--wide {% if not post.featured_image %}card__media--placeholder{% endif %}">
+    {% if post.featured_image %}
+      <img src="{{ post.featured_image.url }}" alt="{{ post.title }}" loading="lazy" width="600" height="338">
+    {% endif %}
+  </div>
+  <div class="card__body">
+    {% if post.category %}<span class="badge badge--gold">{{ post.category.name }}</span>{% endif %}
+    <h3 class="card__title"><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h3>
+    <p class="small muted" style="margin:0">{{ post.excerpt|truncatechars:120 }}</p>
+    <div class="card__meta">
+      <span>{{ post.published_at|date:"d M Y" }}</span><span>{{ post.reading_time }} min read</span>
+    </div>
+  </div>
+</article>

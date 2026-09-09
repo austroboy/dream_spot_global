@@ -1,0 +1,29 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block page_title %}{% if instance %}Edit{% else %}New{% endif %} — {{ cfg.label }}{% endblock %}
+{% block dash_content %}
+<div class="panel" style="max-width:960px">
+  <div class="panel__head">
+    <h2>{% if instance %}{{ instance }}{% else %}New {{ cfg.label|lower }}{% endif %}</h2>
+    <a class="btn btn--ghost btn--sm" href="{% url 'dashboard:content_list' key %}">Back to list</a>
+  </div>
+  <div class="panel__body">
+    <form method="post" enctype="multipart/form-data">{% csrf_token %}
+      <div class="form-grid">
+        {% for field in form.visible_fields %}
+          {% if field.field.widget.input_type == 'textarea' or field.name in 'body,description,overview,eligibility' %}
+            {% include "includes/field.html" with field=field wrapper_class="field--full" %}
+          {% else %}
+            {% include "includes/field.html" with field=field %}
+          {% endif %}
+        {% endfor %}
+      </div>
+      {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+      <div class="row mt-24">
+        <button class="btn btn--primary" type="submit">Save</button>
+        <button class="btn btn--secondary" type="submit" name="save_and_continue" value="1">Save &amp; continue editing</button>
+        <a class="btn btn--ghost" href="{% url 'dashboard:content_list' key %}">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

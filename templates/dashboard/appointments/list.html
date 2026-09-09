@@ -1,0 +1,29 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% load dsg %}
+{% block page_title %}Appointments{% endblock %}
+{% block dash_content %}
+<div class="tabs">
+  <a href="?tab=upcoming" class="{% if tab != 'past' %}is-active{% endif %}">Upcoming</a>
+  <a href="?tab=past" class="{% if tab == 'past' %}is-active{% endif %}">Past</a>
+</div>
+<div class="table-wrap"><table class="data">
+  <thead><tr><th>When</th><th>Name</th><th>Phone</th><th>Mode</th><th>Counsellor</th>
+    <th>Destination</th><th>Status</th><th>Update</th></tr></thead>
+  <tbody>{% for a in page_obj %}
+    <tr><td><strong>{{ a.start_datetime|date:"D d M, g:i A" }}</strong></td>
+      <td>{{ a.full_name }}</td><td class="small">{{ a.phone }}</td>
+      <td class="small">{{ a.get_mode_display }}</td>
+      <td class="small">{{ a.counsellor.full_name|default:"—" }}</td>
+      <td class="small">{{ a.destination.name|default:"—" }}</td>
+      <td><span class="badge badge--{{ a.status|status_class }}">{{ a.get_status_display }}</span></td>
+      <td><form method="post" class="row" style="gap:6px">{% csrf_token %}
+        <input type="hidden" name="appointment" value="{{ a.pk }}">
+        <select name="status" class="field__input field__select" style="min-height:34px;font-size:13px">
+          {% for v, l in statuses %}<option value="{{ v }}" {% if a.status == v %}selected{% endif %}>{{ l }}</option>{% endfor %}
+        </select>
+        <button class="btn btn--sm btn--secondary" type="submit">Save</button></form></td>
+    </tr>
+  {% empty %}<tr><td colspan="8"><div class="empty-state"><h3>No appointments</h3></div></td></tr>{% endfor %}
+  </tbody></table></div>
+{% include "includes/pagination.html" %}
+{% endblock %}

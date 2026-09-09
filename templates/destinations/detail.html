@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-hero {% if country.hero_image %}page-hero--image{% endif %}"
+  {% if country.hero_image %}style="background-image:url('{{ country.hero_image.url }}')"{% endif %}>
+  <div class="container">
+    {% include "includes/breadcrumbs.html" with crumbs=crumbs %}
+    <span class="eyebrow">Study in {{ country.name }}</span>
+    <h1>Study in {{ country.name }} from Bangladesh</h1>
+    <p>{{ country.tagline|default:"World-class universities, clear visa pathways and strong post-study work rights." }}</p>
+    <div class="row" style="margin-top:18px">
+      <a class="btn btn--primary" href="#enquiry">Get free guidance</a>
+      <a class="btn btn--outline-light" href="{% url 'institutions:course_list' %}?country={{ country.slug }}">Browse courses</a>
+    </div>
+  </div>
+</section>
+
+<section class="section section--tight section--alt"><div class="container">
+  <div class="stats">
+    <div class="stat"><div class="stat__value" style="font-size:24px">{{ country.tuition_range }}</div><div class="stat__label">Tuition per year</div></div>
+    <div class="stat"><div class="stat__value" style="font-size:24px">{{ country.living_range }}</div><div class="stat__label">Living cost</div></div>
+    <div class="stat"><div class="stat__value" style="font-size:24px">{{ country.post_study_work|default:"See guide"|truncatechars:22 }}</div><div class="stat__label">Post-study work</div></div>
+    <div class="stat"><div class="stat__value" style="font-size:24px">{{ country.intakes.count }}</div><div class="stat__label">Intakes per year</div></div>
+  </div>
+</div></section>
+
+<section class="section"><div class="container grid grid--sidebar">
+  <div>
+    <div class="prose">
+      {% if country.overview %}<span class="eyebrow">Overview</span><h2>Why {{ country.name }}?</h2>{{ country.overview|linebreaks }}{% endif %}
+      {% if country.why_study %}<h2>Key benefits</h2>{{ country.why_study|linebreaks }}{% endif %}
+      {% if country.education_system %}<h2>The education system</h2>{{ country.education_system|linebreaks }}{% endif %}
+      {% if country.admission_requirements %}<h2>Admission requirements</h2>{{ country.admission_requirements|linebreaks }}{% endif %}
+      {% if country.english_requirements %}<h2>English language requirements</h2>{{ country.english_requirements|linebreaks }}{% endif %}
+    </div>
+
+    {% if country.intakes.all %}
+    <h2 class="mt-24">Intakes &amp; deadlines</h2>
+    <div class="table-wrap"><table class="data">
+      <thead><tr><th>Intake</th><th>Months</th><th>Application deadline</th><th>Status</th></tr></thead>
+      <tbody>{% for intake in country.intakes.all %}
+        <tr><td><strong>{{ intake.name }}</strong></td><td>{{ intake.months|default:"—" }}</td>
+          <td>{{ intake.application_deadline|date:"d M Y"|default:"Rolling" }}</td>
+          <td>{% if intake.is_open %}<span class="badge badge--success">Open</span>{% else %}<span class="badge">Closed</span>{% endif %}</td></tr>
+      {% endfor %}</tbody></table></div>
+    {% endif %}
+
+    {% if cost %}
+    <h2 class="mt-24">Monthly cost of living</h2>
+    <div class="table-wrap"><table class="data">
+      <thead><tr><th>Category</th><th>Low ({{ country.currency }})</th><th>High ({{ country.currency }})</th><th>Low (BDT)</th><th>High (BDT)</th></tr></thead>
+      <tbody>
+        {% for row in cost.rows %}
+        <tr><td>{{ row.label }}</td><td>{{ row.low|floatformat:0 }}</td><td>{{ row.high|floatformat:0 }}</td>
+          <td>৳{{ row.bdt_low|floatformat:0 }}</td><td>৳{{ row.bdt_high|floatformat:0 }}</td></tr>
+        {% endfor %}
+        {% with totals=cost.totals %}
+        <tr style="font-weight:700;background:rgba(242,165,38,.10)"><td>Total</td>
+          <td>{{ totals.low }}</td><td>{{ totals.high }}</td>
+          <td>৳{{ totals.bdt_low }}</td><td>৳{{ totals.bdt_high }}</td></tr>
+        {% endwith %}
+      </tbody></table></div>
+    {% endif %}
+
+    {% if country.visa_process or country.visa_items.all %}
+    <h2 class="mt-24">Student visa process</h2>
+    <div class="prose">{{ country.visa_process|linebreaks }}</div>
+    {% if country.visa_items.all %}
+    <div class="accordion">
+      {% for item in country.visa_items.all %}
+      <div class="accordion__item">
+        <button class="accordion__trigger" aria-expanded="false">{{ item.title }}<span class="accordion__icon">+</span></button>
+        <div class="accordion__panel"><p>{{ item.description|linebreaksbr }}</p></div>
+      </div>
+      {% endfor %}
+    </div>{% endif %}
+    {% endif %}
+
+    {% if country.post_study_work or country.part_time_work %}
+    <h2 class="mt-24">Working during and after study</h2>
+    <div class="prose">{{ country.post_study_work|linebreaks }}{{ country.part_time_work|linebreaks }}</div>
+    {% endif %}
+
+    {% if universities %}
+    <h2 class="mt-24">Top universities in {{ country.name }}</h2>
+    <div class="grid grid--2">
+      {% for uni in universities %}
+      <article class="card"><div class="card__body">
+        <h3 class="card__title"><a href="{{ uni.get_absolute_url }}">{{ uni.name }}</a></h3>
+        <div class="card__meta"><span>📍 {{ uni.city }}</span>
+          {% if uni.world_ranking %}<span>🏅 World #{{ uni.world_ranking }}</span>{% endif %}</div>
+      </div></article>
+      {% endfor %}
+    </div>
+    <a class="btn btn--secondary mt-24" href="{% url 'destinations:universities' country.slug %}">All universities in {{ country.name }}</a>
+    {% endif %}
+
+    {% if scholarships %}
+    <h2 class="mt-24">Scholarships for {{ country.name }}</h2>
+    <div class="grid grid--2">
+      {% for s in scholarships %}
+      <article class="card"><div class="card__body">
+        <span class="badge badge--gold">{{ s.get_award_type_display }}</span>
+        <h3 class="card__title"><a href="{{ s.get_absolute_url }}">{{ s.title }}</a></h3>
+        {% if s.application_deadline %}<div class="card__meta"><span>⏳ {{ s.application_deadline|date:"d M Y" }}</span></div>{% endif %}
+      </div></article>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if faqs %}
+    <h2 class="mt-24">{{ country.name }} FAQs</h2>
+    <div class="accordion">
+      {% for faq in faqs %}
+      <div class="accordion__item">
+        <button class="accordion__trigger" aria-expanded="false">{{ faq.question }}<span class="accordion__icon">+</span></button>
+        <div class="accordion__panel"><p>{{ faq.answer|linebreaksbr }}</p></div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+
+  {% include "includes/sidebar_form.html" with form=form lead_source="destination_page" %}
+</div></section>
+{% endblock %}

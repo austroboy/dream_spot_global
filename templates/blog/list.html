@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-hero"><div class="container">
+  {% include "includes/breadcrumbs.html" %}
+  <span class="eyebrow">Blog</span>
+  <h1>{% if category %}{{ category.name }}{% elif tag %}#{{ tag.name }}{% else %}Study abroad insights{% endif %}</h1>
+  <p>Guides, deadlines and visa updates for Bangladeshi students.</p></div></section>
+<section class="section"><div class="container">
+  <div class="row mb-32">
+    <a class="chip {% if not category %}chip--active{% endif %}" href="{% url 'blog:list' %}">All</a>
+    {% for c in categories %}
+      <a class="chip {% if category.pk == c.pk %}chip--active{% endif %}" href="{{ c.get_absolute_url }}">{{ c.name }}</a>
+    {% endfor %}
+  </div>
+  <div class="grid grid--3">
+    {% for post in page_obj %}{% include "includes/card_post.html" with post=post %}
+    {% empty %}<div class="empty-state" style="grid-column:1/-1"><h3>No articles yet</h3></div>{% endfor %}
+  </div>
+  {% include "includes/pagination.html" %}
+</div></section>
+{% endblock %}

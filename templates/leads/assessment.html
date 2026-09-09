@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-hero"><div class="container">
+  <span class="eyebrow">Free &amp; instant</span><h1>Free profile assessment</h1>
+  <p>Answer four short steps and get an indicative eligibility summary straight away.</p></div></section>
+
+<section class="section"><div class="container" style="max-width:720px">
+  <div class="form-card">
+    <div class="row row--between mb-16">
+      <strong>Step {{ step }} of {{ total_steps }}</strong>
+      <span class="small muted">{{ progress }}% complete</span>
+    </div>
+    <div class="progress mb-24"><div class="progress__bar" style="width:{{ progress }}%"></div></div>
+
+    <h2>
+      {% if step == 1 %}About you
+      {% elif step == 2 %}Academic background
+      {% elif step == 3 %}English &amp; experience
+      {% else %}Your preferences{% endif %}
+    </h2>
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% include "includes/form.html" with form=form %}
+      <div class="row row--between mt-24">
+        {% if step > 1 %}
+          <a class="btn btn--ghost" href="{% url 'leads:assessment_step' step|add:'-1' %}">← Back</a>
+        {% else %}<span></span>{% endif %}
+        <button class="btn btn--primary" type="submit">
+          {% if step < total_steps %}Continue →{% else %}Get my assessment{% endif %}</button>
+      </div>
+    </form>
+  </div>
+  <p class="small muted text-center mt-24">Your information is used only to prepare your assessment.
+    Read our <a href="/privacy-policy/">Privacy Policy</a>.</p>
+</div></section>
+{% endblock %}

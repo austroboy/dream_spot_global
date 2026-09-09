@@ -1,0 +1,28 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block page_title %}{% if instance %}Edit staff user{% else %}New staff user{% endif %}{% endblock %}
+{% block dash_content %}
+<div class="panel" style="max-width:860px">
+  <div class="panel__head"><h2>{% if instance %}{{ instance }}{% else %}Create a staff account{% endif %}</h2></div>
+  <div class="panel__body">
+    <form method="post" enctype="multipart/form-data">{% csrf_token %}
+      <h3>Account</h3>
+      <div class="form-grid">
+        {% for field in form.visible_fields %}{% include "includes/field.html" with field=field %}{% endfor %}
+      </div>
+      <h3 class="mt-24">Staff profile</h3>
+      <div class="form-grid">
+        {% for field in profile_form.visible_fields %}
+          {% if field.name == "bio" or field.name == "destinations_owned" %}
+            {% include "includes/field.html" with field=field wrapper_class="field--full" %}
+          {% else %}{% include "includes/field.html" with field=field %}{% endif %}
+        {% endfor %}
+      </div>
+      {% if not instance %}
+      <p class="small muted">A temporary password will be generated and emailed to the user.</p>
+      {% endif %}
+      <button class="btn btn--primary" type="submit">Save user</button>
+      <a class="btn btn--ghost" href="{% url 'dashboard:user_list' %}">Cancel</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

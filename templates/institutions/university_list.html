@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-hero"><div class="container">
+  {% include "includes/breadcrumbs.html" %}
+  <span class="eyebrow">Universities</span><h1>Find a university</h1></div></section>
+<section class="section"><div class="container grid grid--filters">
+  <form class="filters" method="get">
+    <h3>Filters</h3>
+    <div class="filters__group">
+      <label class="field__label" for="q">Search</label>
+      <input class="field__input" id="q" type="search" name="q" value="{{ selected.q|default:'' }}">
+    </div>
+    <div class="filters__group">
+      <label class="field__label" for="country">Destination</label>
+      <select class="field__input field__select" id="country" name="country">
+        <option value="">All</option>
+        {% for c in countries %}<option value="{{ c.slug }}" {% if selected.country == c.slug %}selected{% endif %}>{{ c.name }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="filters__group">
+      <label class="field__label" for="type">Type</label>
+      <select class="field__input field__select" id="type" name="type">
+        <option value="">Any</option>
+        <option value="public" {% if selected.type == "public" %}selected{% endif %}>Public</option>
+        <option value="private" {% if selected.type == "private" %}selected{% endif %}>Private</option>
+      </select>
+    </div>
+    <div class="filters__group">
+      <label class="field__label" for="ranking">World ranking within</label>
+      <select class="field__input field__select" id="ranking" name="ranking">
+        <option value="">Any</option><option value="100" {% if selected.ranking == "100" %}selected{% endif %}>Top 100</option>
+        <option value="300" {% if selected.ranking == "300" %}selected{% endif %}>Top 300</option>
+        <option value="600" {% if selected.ranking == "600" %}selected{% endif %}>Top 600</option>
+      </select>
+    </div>
+    <button class="btn btn--primary btn--block" type="submit">Apply filters</button>
+  </form>
+  <div>
+    <p class="muted mb-24"><strong>{{ page_obj.paginator.count }}</strong> universities</p>
+    <div class="grid grid--2">
+      {% for uni in page_obj %}
+      <article class="card">
+        <div class="card__body">
+          {% if uni.logo %}<img src="{{ uni.logo.url }}" alt="{{ uni.name }}" style="height:44px;object-fit:contain" loading="lazy">{% endif %}
+          <h3 class="card__title"><a href="{{ uni.get_absolute_url }}">{{ uni.name }}</a></h3>
+          <div class="card__meta"><span>📍 {{ uni.city }}, {{ uni.country.name }}</span>
+            {% if uni.world_ranking %}<span>🏅 #{{ uni.world_ranking }}</span>{% endif %}</div>
+          <div class="card__meta"><span>{{ uni.course_count }} courses</span>
+            <span>{{ uni.get_university_type_display }}</span></div>
+          <div class="card__foot"><a class="btn btn--sm btn--secondary" href="{{ uni.get_absolute_url }}">View university</a></div>
+        </div>
+      </article>
+      {% empty %}<div class="empty-state" style="grid-column:1/-1"><h3>No universities found</h3></div>{% endfor %}
+    </div>
+    {% include "includes/pagination.html" %}
+  </div>
+</div></section>
+{% endblock %}

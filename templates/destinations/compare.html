@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-hero"><div class="container">
+  <span class="eyebrow">Compare</span><h1>Compare study destinations</h1>
+  <p>Pick up to three countries and see tuition, living cost, work rights and intakes side by side.</p></div></section>
+<section class="section"><div class="container">
+  <form method="get" class="form-card mb-32">
+    <ul class="field__chips">
+      {% for c in all_countries %}
+      <li><label><input type="checkbox" name="c" value="{{ c.slug }}"
+        {% for s in selected %}{% if s.slug == c.slug %}checked{% endif %}{% endfor %}> {{ c.name }}</label></li>
+      {% endfor %}
+    </ul>
+    <button class="btn btn--primary mt-24" type="submit">Compare</button>
+  </form>
+
+  {% if selected %}
+  <div class="table-wrap"><table class="data compare">
+    <thead><tr><th>Criteria</th>{% for c in selected %}<th>{{ c.name }}</th>{% endfor %}</tr></thead>
+    <tbody>
+      <tr><td><strong>Tuition / year</strong></td>{% for c in selected %}<td>{{ c.tuition_range }}</td>{% endfor %}</tr>
+      <tr><td><strong>Living cost / month</strong></td>{% for c in selected %}<td>{{ c.living_range }}</td>{% endfor %}</tr>
+      <tr><td><strong>Post-study work</strong></td>{% for c in selected %}<td>{{ c.post_study_work|truncatechars:90|default:"—" }}</td>{% endfor %}</tr>
+      <tr><td><strong>Part-time work</strong></td>{% for c in selected %}<td>{{ c.work_hours_allowed|default:"—" }}</td>{% endfor %}</tr>
+      <tr><td><strong>Visa duration</strong></td>{% for c in selected %}<td>{{ c.visa_duration|default:"—" }}</td>{% endfor %}</tr>
+      <tr><td><strong>Intakes</strong></td>{% for c in selected %}<td>{% for i in c.intakes.all %}{{ i.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>{% endfor %}</tr>
+      <tr><td><strong>Universities listed</strong></td>{% for c in selected %}<td>{{ c.universities.count }}</td>{% endfor %}</tr>
+    </tbody>
+  </table></div>
+  {% else %}<div class="empty-state"><h3>Select countries to compare</h3></div>{% endif %}
+</div></section>
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% load dsg %}
+{% block page_title %}Leads{% endblock %}
+{% block dash_content %}
+<form class="toolbar" method="get">
+  <input type="search" name="q" value="{{ selected.q|default:'' }}" placeholder="Name, phone or email">
+  <select name="status"><option value="">All statuses</option>
+    {% for v, l in statuses %}<option value="{{ v }}" {% if selected.status == v %}selected{% endif %}>{{ l }}</option>{% endfor %}</select>
+  <select name="source"><option value="">All sources</option>
+    {% for v, l in sources %}<option value="{{ v }}" {% if selected.source == v %}selected{% endif %}>{{ l }}</option>{% endfor %}</select>
+  <select name="country"><option value="">All destinations</option>
+    {% for c in countries %}<option value="{{ c.slug }}" {% if selected.country == c.slug %}selected{% endif %}>{{ c.name }}</option>{% endfor %}</select>
+  {% if can_reassign %}
+  <select name="counsellor"><option value="">All counsellors</option>
+    {% for s in counsellors %}<option value="{{ s.pk }}" {% if selected.counsellor == s.pk|stringformat:"s" %}selected{% endif %}>{{ s.full_name }}</option>{% endfor %}</select>
+  {% endif %}
+  <input type="date" name="from" value="{{ selected.from|default:'' }}">
+  <input type="date" name="to" value="{{ selected.to|default:'' }}">
+  <button class="btn btn--primary btn--sm" type="submit">Filter</button>
+  <a class="btn btn--ghost btn--sm" href="{% url 'dashboard:lead_list' %}">Reset</a>
+  <a class="btn btn--secondary btn--sm" href="?{{ querystring }}&export=csv">Export CSV</a>
+  <a class="btn btn--secondary btn--sm" href="{% url 'dashboard:lead_kanban' %}">Board view</a>
+</form>
+
+<form method="post" action="{% url 'dashboard:lead_bulk' %}">
+  {% csrf_token %}
+  <div class="toolbar">
+    <select name="bulk_action">
+      <option value="">Bulk action…</option>
+      <option value="status">Change status</option>
+      {% if can_reassign %}<option value="assign">Assign to counsellor</option>{% endif %}
+      <option value="export">Export selected</option>
+      {% if user.is_admin_role %}<option value="delete">Delete</option>{% endif %}
+    </select>
+    <select name="bulk_status"><option value="">— status —</option>
+      {% for v, l in statuses %}<option value="{{ v }}">{{ l }}</option>{% endfor %}</select>
+    {% if can_reassign %}
+    <select name="bulk_assignee"><option value="">— counsellor —</option>
+      {% for s in counsellors %}<option value="{{ s.pk }}">{{ s.full_name }}</option>{% endfor %}</select>
+    {% endif %}
+    <button class="btn btn--secondary btn--sm" type="submit"
+            data-confirm="Apply this bulk action to the selected leads?">Apply</button>
+    <span class="small muted">{{ page_obj.paginator.count }} leads</span>
+  </div>
+
+  <div class="table-wrap">
+    <table class="data">
+      <thead><tr>
+        <th><input type="checkbox" data-select-all aria-label="Select all"></th>
+        <th><a href="?{{ querystring }}&sort=full_name">Name</a></th>
+        <th>Phone</th><th>Email</th><th>Destinations</th><th>Source</th>
+        <th><a href="?{{ querystring }}&sort=status">Status</a></th>
+        <th>Assigned</th>
+        <th><a href="?{{ querystring }}&sort=-created_at">Created</a></th><th></th>
+      </tr></thead>
+      <tbody>
+        {% for lead in page_obj %}
+        <tr>
+          <td><input type="checkbox" name="selected" value="{{ lead.pk }}"></td>
+          <td><a href="{% url 'dashboard:lead_detail' lead.pk %}"><strong>{{ lead.full_name }}</strong></a>
+            {% if lead.is_overdue %}<br><span class="badge badge--danger">Overdue</span>{% endif %}</td>
+          <td class="small">{{ lead.phone }}</td>
+          <td class="small">{{ lead.email }}</td>
+          <td class="small">{{ lead.destination_names|truncatechars:30 }}</td>
+          <td class="small">{{ lead.get_source_display }}</td>
+          <td><span class="badge badge--{{ lead.status|status_class }}">{{ lead.get_status_display }}</span></td>
+          <td class="small">{{ lead.assigned_to.full_name|default:"—" }}</td>
+          <td class="small">{{ lead.created_at|date:"d M Y" }}</td>
+          <td><a class="btn btn--sm btn--ghost" href="{% url 'dashboard:lead_detail' lead.pk %}">Open</a></td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="10"><div class="empty-state"><h3>No leads match these filters</h3></div></td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</form>
+{% include "includes/pagination.html" %}
+{% endblock %}

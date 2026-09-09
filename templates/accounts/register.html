@@ -1,0 +1,10 @@
+{% extends "accounts/auth_base.html" %}
+{% block auth_title %}Create your student account{% endblock %}
+{% block auth_body %}
+<p class="small muted mb-16">Track your applications, upload documents and message your counsellor.</p>
+<form method="post" novalidate>{% csrf_token %}
+  {% include "includes/form.html" with form=form %}
+  <button class="btn btn--primary btn--block" type="submit">Create account</button>
+</form>
+<p class="small text-center mt-24">Already registered? <a href="{% url 'accounts:login' %}">Sign in</a></p>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="section"><div class="container" style="max-width:640px;text-align:center">
+  <div class="icon-card">
+    <div class="icon-card__icon" style="margin:0 auto 18px;width:64px;height:64px;font-size:28px">✓</div>
+    <span class="eyebrow">Received</span>
+    <h1 style="font-size:32px">Thank you — we have your details</h1>
+    <p class="muted">A Dream Spot Global counsellor will contact you within one working day.
+      In the meantime, explore our destinations or book a specific time that suits you.</p>
+    <div class="row" style="justify-content:center;margin-top:20px">
+      <a class="btn btn--primary" href="{% url 'appointments:book' %}">Book a time slot</a>
+      <a class="btn btn--secondary" href="{% url 'destinations:list' %}">Explore destinations</a>
+    </div>
+  </div>
+</div></section>
+{% endblock %}

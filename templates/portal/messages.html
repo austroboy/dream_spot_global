@@ -1,0 +1,26 @@
+{% extends "portal/base_portal.html" %}
+{% block portal_title %}Messages{% endblock %}
+{% block portal_content %}
+<div class="form-card" style="max-width:820px">
+  <h2>Conversation with your counsellor</h2>
+  <div class="stack mb-24" style="max-height:460px;overflow-y:auto">
+    {% for m in items %}
+    <div style="align-self:{% if m.sender == user %}flex-end{% else %}flex-start{% endif %};max-width:78%">
+      <div style="background:{% if m.sender == user %}var(--brand-navy);color:#fff{% else %}var(--surface-alt){% endif %};
+                  padding:12px 16px;border-radius:var(--radius-md)">
+        {{ m.body|linebreaksbr }}</div>
+      <div class="small muted" style="margin-top:4px">{{ m.sender.get_full_name|default:m.sender.username }} • {{ m.created_at|date:"d M, g:i A" }}</div>
+    </div>
+    {% empty %}<div class="empty-state"><h3>No messages yet</h3><p>Say hello — your counsellor will reply.</p></div>{% endfor %}
+  </div>
+  <form method="post">
+    {% csrf_token %}
+    <div class="field">
+      <label class="field__label" for="body">Your message</label>
+      <textarea class="field__input field__textarea" id="body" name="body" required
+                placeholder="Ask about your application, documents or next steps…"></textarea>
+    </div>
+    <button class="btn btn--primary" type="submit">Send message</button>
+  </form>
+</div>
+{% endblock %}

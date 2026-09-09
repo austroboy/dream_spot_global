@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="section"><div class="container" style="max-width:640px">
+  <div class="form-card text-center">
+    <div class="icon-card__icon" style="margin:0 auto 18px;width:64px;height:64px;font-size:28px">✓</div>
+    <span class="eyebrow">Confirmed</span>
+    <h1 style="font-size:30px">Your session is booked</h1>
+    <p class="muted">{{ appointment.start_datetime|date:"l d F Y, g:i A" }} —
+      {{ appointment.get_mode_display }}{% if appointment.counsellor %} with {{ appointment.counsellor.full_name }}{% endif %}.</p>
+    <p class="small muted">A confirmation email with a calendar invite is on its way to {{ appointment.email }}.</p>
+    <div class="row" style="justify-content:center;margin-top:18px">
+      <a class="btn btn--primary" href="{% url 'appointments:ics' appointment.token %}">Add to calendar</a>
+      <a class="btn btn--secondary" href="{% url 'appointments:manage' appointment.token %}">Reschedule or cancel</a>
+    </div>
+  </div>
+</div></section>
+{% endblock %}

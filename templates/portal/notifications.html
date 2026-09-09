@@ -1,0 +1,20 @@
+{% extends "portal/base_portal.html" %}
+{% load dsg %}
+{% block portal_title %}Notifications{% endblock %}
+{% block portal_content %}
+<form method="post" class="mb-24">{% csrf_token %}
+  <button class="btn btn--secondary btn--sm" type="submit">Mark all as read</button></form>
+<div class="stack">
+  {% for n in items %}
+  <div class="form-card" style="padding:16px 20px">
+    <div class="row row--between">
+      <strong>{{ n.title }}</strong>
+      <span class="badge badge--{{ n.level|status_class }}">{{ n.get_level_display }}</span>
+    </div>
+    <p class="small muted" style="margin:6px 0 0">{{ n.body }}</p>
+    <div class="small muted">{{ n.created_at|date:"d M Y, g:i A" }}
+      {% if n.url %} • <a href="{{ n.url }}">Open</a>{% endif %}</div>
+  </div>
+  {% empty %}<div class="empty-state"><h3>Nothing here yet</h3></div>{% endfor %}
+</div>
+{% endblock %}

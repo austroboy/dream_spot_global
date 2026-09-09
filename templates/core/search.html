@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-hero"><div class="container">
+  <span class="eyebrow">Search</span><h1>Search results</h1>
+  <form method="get" style="max-width:520px;margin-top:16px">
+    <input class="field__input" type="search" name="q" value="{{ q }}" placeholder="Search courses, universities, articles…">
+  </form>
+</div></section>
+<section class="section"><div class="container">
+  {% for group, items in results.items %}
+    <h2>{{ group }}</h2>
+    <div class="grid grid--3 mb-32">
+      {% for item in items %}
+      <article class="card"><div class="card__body">
+        <h3 class="card__title"><a href="{{ item.get_absolute_url }}">{{ item }}</a></h3>
+      </div></article>
+      {% endfor %}
+    </div>
+  {% empty %}
+    <div class="empty-state"><h3>No results{% if q %} for “{{ q }}”{% endif %}</h3>
+      <p>Try a different keyword, or <a href="{% url 'core:contact' %}">ask us directly</a>.</p></div>
+  {% endfor %}
+</div></section>
+{% endblock %}

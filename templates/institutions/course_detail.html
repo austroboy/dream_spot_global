@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-hero"><div class="container">
+  {% include "includes/breadcrumbs.html" %}
+  <span class="eyebrow">{{ course.get_study_level_display }} • {{ course.get_discipline_display }}</span>
+  <h1>{{ course.title }}</h1>
+  <p>{{ course.university.name }} — {{ course.university.city }}, {{ course.university.country.name }}</p>
+</div></section>
+
+<section class="section section--tight section--alt"><div class="container">
+  <div class="stats">
+    <div class="stat"><div class="stat__value" style="font-size:22px">{{ course.tuition_display }}</div><div class="stat__label">Tuition fee</div></div>
+    <div class="stat"><div class="stat__value" style="font-size:22px">{{ course.duration_display }}</div><div class="stat__label">Duration</div></div>
+    <div class="stat"><div class="stat__value" style="font-size:22px">{{ course.get_study_level_display }}</div><div class="stat__label">Level</div></div>
+    <div class="stat"><div class="stat__value" style="font-size:22px">{% if course.scholarship_available %}Available{% else %}—{% endif %}</div><div class="stat__label">Scholarship</div></div>
+  </div>
+</div></section>
+
+<section class="section"><div class="container grid grid--sidebar">
+  <div>
+    <div class="row mb-24">
+      <button type="button" class="chip {% if course.id in shortlisted %}chip--active{% endif %}"
+              data-shortlist="{% url 'institutions:toggle_shortlist' course.pk %}">
+        {% if course.id in shortlisted %}★ Shortlisted{% else %}☆ Add to shortlist{% endif %}</button>
+      {% if course.course_url %}<a class="chip" href="{{ course.course_url }}" target="_blank" rel="noopener">University page ↗</a>{% endif %}
+    </div>
+    <div class="prose">
+      {% if course.overview %}<h2>Course overview</h2>{{ course.overview|linebreaks }}{% endif %}
+      {% if course.entry_requirements %}<h2>Entry requirements</h2>{{ course.entry_requirements|linebreaks }}{% endif %}
+      {% if course.english_requirements %}<h2>English requirements</h2>{{ course.english_requirements|linebreaks }}{% endif %}
+      {% if course.career_outcomes %}<h2>Career outcomes</h2>{{ course.career_outcomes|linebreaks }}{% endif %}
+    </div>
+    {% if course.intakes.all %}
+    <h2>Intakes</h2>
+    <div class="row">{% for i in course.intakes.all %}<span class="chip">{{ i.name }}{% if i.application_deadline %} — deadline {{ i.application_deadline|date:"d M Y" }}{% endif %}</span>{% endfor %}</div>
+    {% endif %}
+    {% if similar %}
+    <h2 class="mt-24">Similar courses</h2>
+    <div class="grid grid--2">{% for c in similar %}{% include "includes/card_course.html" with course=c %}{% endfor %}</div>
+    {% endif %}
+  </div>
+  {% include "includes/sidebar_form.html" with form=form lead_source="course_page" %}
+</div></section>
+{% endblock %}
+
+{% block schema %}
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Course","name":"{{ course.title|escapejs }}",
+"description":"{{ course.overview|striptags|truncatechars:200|escapejs }}",
+"provider":{"@type":"CollegeOrUniversity","name":"{{ course.university.name|escapejs }}"}}
+</script>
+{% endblock %}

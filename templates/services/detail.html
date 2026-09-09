@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-hero"><div class="container">
+  {% include "includes/breadcrumbs.html" %}
+  <span class="eyebrow">Service</span><h1>{{ service.name }}</h1>
+  <p>{{ service.short_description }}</p></div></section>
+
+<section class="section"><div class="container grid grid--sidebar">
+  <div>
+    <div class="prose">{{ service.description|linebreaks }}</div>
+
+    {% if service.included_items %}
+    <h2>What's included</h2>
+    <div class="grid grid--2">
+      {% for item in service.included_items %}
+      <div class="row" style="gap:10px;align-items:flex-start">
+        <span class="badge badge--gold">✓</span><span>{{ item }}</span></div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if service.steps.all %}
+    <h2 class="mt-24">How it works</h2>
+    <div class="timeline">
+      {% for step in service.steps.all %}
+      <div class="timeline__item is-done">
+        <div class="timeline__title">{{ step.number }}. {{ step.title }}</div>
+        <div class="timeline__meta">{{ step.description }}</div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if faqs %}
+    <h2 class="mt-24">Questions about {{ service.name }}</h2>
+    <div class="accordion">{% for faq in faqs %}
+      <div class="accordion__item">
+        <button class="accordion__trigger" aria-expanded="false">{{ faq.question }}<span class="accordion__icon">+</span></button>
+        <div class="accordion__panel"><p>{{ faq.answer|linebreaksbr }}</p></div></div>
+    {% endfor %}</div>
+    {% endif %}
+
+    {% if countries %}
+    <h2 class="mt-24">Available for</h2>
+    <div class="row">{% for c in countries %}<a class="chip" href="{{ c.get_absolute_url }}">{{ c.name }}</a>{% endfor %}</div>
+    {% endif %}
+  </div>
+
+  {% include "includes/sidebar_form.html" with form=form lead_source="service_page" %}
+</div></section>
+{% endblock %}

@@ -1,0 +1,83 @@
+{% load static dsg %}<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ meta_title|default:"Dream Spot Global — Study Abroad Consultancy in Dhaka" }}{% endblock %}</title>
+  <meta name="description" content="{% block description %}{{ meta_description|default:site.default_meta_description|default:'Dream Spot Global is a study abroad education consultancy in Uttara, Dhaka. Free counselling, admission and student visa guidance for the UK, Australia, Canada, USA, Germany, Finland, Ireland and New Zealand.' }}{% endblock %}">
+  <link rel="canonical" href="{% block canonical %}{{ request.build_absolute_uri }}{% endblock %}">
+  {% block robots %}{% endblock %}
+
+  {# Open Graph / Twitter (SRS SEO-06) #}
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="{{ site.company_name|default:'Dream Spot Global' }}">
+  <meta property="og:title" content="{{ meta_title|default:'Dream Spot Global' }}">
+  <meta property="og:description" content="{{ meta_description|default:site.default_meta_description }}">
+  <meta property="og:url" content="{{ request.build_absolute_uri }}">
+  {% block og_image %}{% if site.logo %}<meta property="og:image" content="{{ site.logo.url }}">{% endif %}{% endblock %}
+  <meta name="twitter:card" content="summary_large_image">
+  {% if site.search_console_token %}<meta name="google-site-verification" content="{{ site.search_console_token }}">{% endif %}
+
+  {% include "includes/favicon.html" %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/brand.css' %}">
+  {% block extra_css %}{% endblock %}
+
+  {# JSON-LD: LocalBusiness (SRS SEO-04) #}
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org","@type":"EducationalOrganization",
+    "name":"{{ site.company_name|default:'Dream Spot Global' }}",
+    "description":"Study abroad education consultancy in Dhaka, Bangladesh.",
+    "url":"{{ request.scheme }}://{{ request.get_host }}/",
+    {% if site.logo %}"logo":"{{ request.scheme }}://{{ request.get_host }}{{ site.logo.url }}",{% endif %}
+    "email":"{{ site.email|default:'dreamspotglobal@gmail.com' }}",
+    "telephone":"{{ site.phone_primary|default:'+880 1410-157209' }}",
+    "address":{"@type":"PostalAddress","streetAddress":"House 21, Road 01, Sector 9, Uttara",
+      "addressLocality":"Dhaka","addressCountry":"BD"},
+    "sameAs":[{% for name, url, icon in site.social_links %}"{{ url }}"{% if not forloop.last %},{% endif %}{% endfor %}]
+  }
+  </script>
+  {% block schema %}{% endblock %}
+
+  {% if site.ga4_id %}
+  <script async src="https://www.googletagmanager.com/gtag/js?id={{ site.ga4_id }}"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}
+  gtag('js',new Date());gtag('config','{{ site.ga4_id }}');</script>
+  {% endif %}
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+{% include "includes/navbar.html" %}
+
+{% if messages %}
+<div class="alerts" role="status" aria-live="polite">
+  {% for message in messages %}
+    <div class="alert alert--{{ message.tags }}">{{ message }}</div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<main id="main">
+  {% block content %}{% endblock %}
+</main>
+
+{% include "includes/footer.html" %}
+
+{# Floating contact actions (SRS UI-04) #}
+<div class="floaters">
+  {% if site.whatsapp_link %}
+    <a class="fl-wa" href="{{ site.whatsapp_link }}" target="_blank" rel="noopener"
+       aria-label="Chat on WhatsApp" title="Chat on WhatsApp">✆</a>
+  {% endif %}
+  <a class="fl-call" href="tel:{{ site.phone_primary|default:'+8801410157209' }}"
+     aria-label="Call Dream Spot Global" title="Call us">☎</a>
+</div>
+
+<script src="{% static 'js/main.js' %}" defer></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-hero"><div class="container">
+  {% include "includes/breadcrumbs.html" %}
+  <span class="eyebrow">Services</span><h1>How we help you</h1>
+  <p>Nine services covering every stage from first enquiry to arrival.</p></div></section>
+<section class="section"><div class="container"><div class="grid grid--3">
+  {% for service in services %}
+  <a class="icon-card" href="{{ service.get_absolute_url }}">
+    <div class="icon-card__icon">◆</div><h3>{{ service.name }}</h3>
+    <p>{{ service.short_description }}</p>
+  </a>
+  {% endfor %}
+</div></div></section>
+{% include "includes/cta_band.html" %}
+{% endblock %}

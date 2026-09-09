@@ -1,0 +1,24 @@
+# Dream Spot Global — Python dependencies
+# Core
+Django==5.1.15
+Pillow==11.0.0                 # image uploads (logos, hero, avatars)
+
+# Production server & static files
+gunicorn==23.0.0
+whitenoise==6.8.2
+
+# PostgreSQL (used automatically when POSTGRES_DB is set)
+psycopg[binary]==3.2.3
+
+# Caching & background jobs (optional but recommended in production)
+redis==5.2.0
+celery==5.4.0
+django-celery-beat==2.7.0
+
+# Utilities
+python-dotenv==1.0.1
+requests==2.32.3
+
+# Development / QA (install with: pip install -r requirements.txt)
+django-debug-toolbar==4.4.6
+coverage==7.6.9

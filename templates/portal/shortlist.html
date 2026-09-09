@@ -1,0 +1,12 @@
+{% extends "portal/base_portal.html" %}
+{% block portal_title %}My shortlist{% endblock %}
+{% block portal_content %}
+{% if items %}
+<div class="grid grid--2">
+  {% for item in items %}{% if item.course %}{% include "includes/card_course.html" with course=item.course %}{% endif %}{% endfor %}
+</div>
+{% else %}
+<div class="empty-state"><h3>Nothing saved yet</h3>
+  <a class="btn btn--primary" href="{% url 'institutions:course_list' %}">Browse courses</a></div>
+{% endif %}
+{% endblock %}

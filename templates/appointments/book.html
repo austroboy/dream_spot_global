@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-hero"><div class="container">
+  {% include "includes/breadcrumbs.html" %}
+  <span class="eyebrow">100% free</span><h1>Book your free counselling session</h1>
+  <p>Pick a time that suits you — in our Uttara office, by phone, or online.</p></div></section>
+
+<section class="section"><div class="container grid grid--sidebar">
+  <div>
+    <div class="form-card">
+      <h2>1. Choose a time slot</h2>
+      {% if calendar %}
+      <div class="tabs" role="tablist">
+        {% for day, slots in calendar.items %}
+          <a href="#" data-day="{{ forloop.counter }}" class="{% if forloop.first %}is-active{% endif %}">
+            {{ day|date:"D d M" }}</a>
+        {% endfor %}
+      </div>
+      {% for day, slots in calendar.items %}
+        <div data-day-panel="{{ forloop.counter }}" class="{% if not forloop.first %}hide{% endif %}">
+          <div class="row">
+            {% for slot in slots %}
+              <button type="button" class="chip" data-slot="{{ slot.iso }}"
+                      data-label="{{ day|date:'D d M' }} at {{ slot.label }} with {{ slot.counsellor }}">
+                {{ slot.label }}</button>
+            {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
+      <p class="small muted mt-24">Selected: <strong id="slot-summary">no slot selected yet</strong></p>
+      {% else %}
+      <div class="empty-state">
+        <h3>No slots published yet</h3>
+        <p>Please call us on {{ site.phone_primary }} and we will arrange a session.</p>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="form-card mt-24">
+      <h2>2. Your details</h2>
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <div class="form-grid">
+          {% for field in form.visible_fields %}
+            {% include "includes/field.html" with field=field %}
+          {% endfor %}
+        </div>
+        {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+        <button class="btn btn--primary" type="submit">Confirm my free session</button>
+      </form>
+    </div>
+  </div>
+
+  <aside class="stack">
+    <div class="form-card">
+      <h3>What happens in the session</h3>
+      <ul class="stack" style="padding-left:18px">
+        <li>We review your academic profile and budget.</li>
+        <li>You get a realistic shortlist of countries and universities.</li>
+        <li>We explain the timeline, costs and visa requirements.</li>
+        <li>No fee, no pressure, no obligation.</li>
+      </ul>
+    </div>
+    <div class="form-card">
+      <h3>Prefer to walk in?</h3>
+      <p class="small muted">{{ site.address }}</p>
+      <p class="small">{{ site.office_hours }}</p>
+      <a class="btn btn--secondary btn--block" href="tel:{{ site.phone_primary }}">Call {{ site.phone_primary }}</a>
+    </div>
+  </aside>
+</div></section>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block page_title %}Counsellor availability{% endblock %}
+{% block dash_content %}
+<div class="chart-grid">
+  <div class="panel">
+    <div class="panel__head"><h2>Weekly availability rules</h2></div>
+    <div class="panel__body panel__body--flush"><div class="table-wrap" style="border:0;box-shadow:none">
+      <table class="data"><thead><tr><th>Counsellor</th><th>Day</th><th>From</th><th>To</th>
+        <th>Slot</th><th>Active</th><th></th></tr></thead>
+      <tbody>{% for r in rules %}
+        <tr><td>{{ r.counsellor.full_name }}</td><td>{{ r.get_weekday_display }}</td>
+          <td>{{ r.start_time|time:"g:i A" }}</td><td>{{ r.end_time|time:"g:i A" }}</td>
+          <td>{{ r.slot_minutes }} min</td>
+          <td>{% if r.is_active %}<span class="tick">✓</span>{% else %}<span class="cross">✕</span>{% endif %}</td>
+          <td><a class="btn btn--sm btn--ghost" href="{% url 'dashboard:availability_delete' r.pk %}"
+                 data-confirm="Remove this availability rule?">Remove</a></td></tr>
+      {% empty %}<tr><td colspan="7" class="muted small">No rules yet — students cannot book until you add one.</td></tr>{% endfor %}
+      </tbody></table></div></div>
+  </div>
+  <div>
+    <div class="panel">
+      <div class="panel__head"><h3>Add availability</h3></div>
+      <div class="panel__body"><form method="post">{% csrf_token %}
+        {% include "includes/form.html" with form=form %}
+        <button class="btn btn--primary btn--block btn--sm" type="submit">Add rule</button>
+      </form></div>
+    </div>
+    <div class="panel">
+      <div class="panel__head"><h3>Blackout date</h3></div>
+      <div class="panel__body"><form method="post">{% csrf_token %}
+        <input type="hidden" name="action" value="blackout">
+        {% include "includes/form.html" with form=blackout_form %}
+        <button class="btn btn--secondary btn--block btn--sm" type="submit">Add blackout</button>
+      </form>
+      <ul class="stack mt-24" style="list-style:none;padding:0;margin:0">
+        {% for b in blackouts %}<li class="small">{{ b.counsellor.full_name }} — {{ b.date }} ({{ b.reason|default:"unavailable" }})</li>{% endfor %}
+      </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

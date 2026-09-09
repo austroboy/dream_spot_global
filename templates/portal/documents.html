@@ -1,0 +1,71 @@
+{% extends "portal/base_portal.html" %}
+{% load dsg %}
+{% block portal_title %}My documents{% endblock %}
+{% block portal_content %}
+<div class="grid grid--sidebar">
+  <div>
+    <div class="form-card mb-32">
+      <h2>Uploaded documents</h2>
+      {% if documents %}
+      <div class="table-wrap"><table class="data">
+        <thead><tr><th>Type</th><th>File</th><th>Status</th><th>Remarks</th><th>Uploaded</th><th></th></tr></thead>
+        <tbody>{% for d in documents %}
+          <tr>
+            <td><strong>{{ d.get_document_type_display }}</strong></td>
+            <td>{{ d.filename|truncatechars:26 }}</td>
+            <td><span class="badge badge--{{ d.status|status_class }}">{{ d.get_status_display }}</span></td>
+            <td class="small muted">{{ d.remarks|default:"—" }}</td>
+            <td class="small">{{ d.created_at|date:"d M Y" }}</td>
+            <td class="row" style="gap:6px">
+              <a class="btn btn--sm btn--ghost" href="{% url 'portal:document_download' d.pk %}">Download</a>
+              {% if d.status != "verified" %}
+              <a class="btn btn--sm btn--ghost" href="{% url 'portal:document_delete' d.pk %}"
+                 data-confirm="Delete {{ d.get_document_type_display }}?">Delete</a>{% endif %}
+            </td>
+          </tr>
+        {% endfor %}</tbody></table></div>
+      {% else %}
+      <div class="empty-state"><h3>No documents uploaded yet</h3>
+        <p>Start with your passport and academic transcripts.</p></div>
+      {% endif %}
+    </div>
+
+    <div class="form-card">
+      <h2>Document checklist</h2>
+      <div class="grid grid--2">
+        {% for item in checklist %}
+        <div class="row" style="gap:10px">
+          <span class="badge badge--{% if item.uploaded %}success{% else %}warning{% endif %}">
+            {% if item.uploaded %}✓{% else %}!{% endif %}</span>
+          <span>{{ item.label }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <aside class="form-card">
+    <h3>Upload a document</h3>
+    <p class="small muted">PDF, JPG, PNG or DOCX up to 10 MB.</p>
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="field">
+        <label class="field__label" for="document_type">Document type</label>
+        <select class="field__input field__select" id="document_type" name="document_type" required>
+          {% for value, label in document_types %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="field">
+        <label class="field__label" for="title">Label (optional)</label>
+        <input class="field__input" id="title" type="text" name="title" placeholder="e.g. HSC transcript">
+      </div>
+      <div class="field">
+        <label class="field__label" for="file">File</label>
+        <input class="field__input" id="file" type="file" name="file" required
+               accept=".pdf,.jpg,.jpeg,.png,.docx">
+      </div>
+      <button class="btn btn--primary btn--block" type="submit">Upload</button>
+    </form>
+  </aside>
+</div>
+{% endblock %}

@@ -1,0 +1,106 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% load dsg %}
+{% block page_title %}{{ student.full_name }}{% endblock %}
+{% block dash_content %}
+<div class="detail-grid">
+  <div>
+    <div class="panel panel--gold">
+      <div class="panel__head"><h2>{{ student.full_name }}</h2>
+        <span class="badge">{{ student.completeness }}% profile</span></div>
+      <div class="panel__body">
+        <dl class="def-list">
+          <dt>Email</dt><dd>{{ student.user.email }}</dd>
+          <dt>Phone</dt><dd>{{ student.user.phone }}</dd>
+          <dt>Date of birth</dt><dd>{{ student.date_of_birth|default:"—" }}</dd>
+          <dt>Passport</dt><dd>{{ student.passport_no|default:"—" }}</dd>
+          <dt>Education</dt><dd>{{ student.current_education|default:"—" }}{% if student.gpa %} (GPA {{ student.gpa }}){% endif %}</dd>
+          <dt>English</dt><dd>{{ student.get_english_test_display }}{% if student.english_score %} — {{ student.english_score }}{% endif %}</dd>
+          <dt>Destinations</dt><dd>{% for c in student.preferred_destinations.all %}{{ c.name }}{% if not forloop.last %}, {% endif %}{% empty %}—{% endfor %}</dd>
+          <dt>Intake</dt><dd>{{ student.preferred_intake|default:"—" }}</dd>
+          <dt>Counsellor</dt><dd>{{ student.assigned_counsellor.full_name|default:"Unassigned" }}</dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel__head"><h2>Applications</h2>
+        <a class="btn btn--sm btn--primary" href="{% url 'dashboard:application_create' %}">New application</a></div>
+      <div class="panel__body panel__body--flush"><div class="table-wrap" style="border:0;box-shadow:none">
+        <table class="data"><thead><tr><th>Reference</th><th>University</th><th>Course</th><th>Stage</th><th></th></tr></thead>
+        <tbody>{% for a in applications %}
+          <tr><td>{{ a.reference_no }}</td><td>{{ a.university.name }}</td>
+            <td class="small">{{ a.course.title|truncatechars:38 }}</td>
+            <td><span class="badge badge--gold">{{ a.get_stage_display }}</span></td>
+            <td><a class="btn btn--sm btn--ghost" href="{% url 'dashboard:application_detail' a.pk %}">Open</a></td></tr>
+        {% empty %}<tr><td colspan="5" class="muted small">No applications yet.</td></tr>{% endfor %}
+        </tbody></table></div></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel__head"><h2>Documents</h2></div>
+      <div class="panel__body panel__body--flush"><div class="table-wrap" style="border:0;box-shadow:none">
+        <table class="data"><thead><tr><th>Type</th><th>Status</th><th>Remarks</th><th>Uploaded</th><th></th></tr></thead>
+        <tbody>{% for d in documents %}
+          <tr><td>{{ d.get_document_type_display }}</td>
+            <td><span class="badge badge--{{ d.status|status_class }}">{{ d.get_status_display }}</span></td>
+            <td class="small muted">{{ d.remarks|default:"—" }}</td>
+            <td class="small">{{ d.created_at|date:"d M Y" }}</td>
+            <td class="row" style="gap:6px">
+              <a class="btn btn--sm btn--ghost" href="{% url 'dashboard:document_download' d.pk %}">Download</a>
+              {% if can_verify %}
+              <form method="post" action="{% url 'dashboard:document_review' d.pk %}" class="row" style="gap:4px">
+                {% csrf_token %}
+                <select name="decision" class="field__input field__select" style="min-height:32px;font-size:12px">
+                  <option value="verified">Verify</option><option value="rejected">Reject</option>
+                  <option value="reupload">Re-upload</option></select>
+                <input name="remarks" placeholder="Remarks" class="field__input" style="min-height:32px;font-size:12px;width:120px">
+                <button class="btn btn--sm btn--secondary" type="submit">Save</button>
+              </form>{% endif %}
+            </td></tr>
+        {% empty %}<tr><td colspan="5" class="muted small">No documents uploaded.</td></tr>{% endfor %}
+        </tbody></table></div></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel__head"><h2>Conversation</h2></div>
+      <div class="panel__body">
+        <div class="stack mb-24" style="max-height:320px;overflow-y:auto">
+          {% for m in thread_messages %}
+          <div style="align-self:{% if m.sender == user %}flex-end{% else %}flex-start{% endif %};max-width:80%">
+            <div style="background:{% if m.sender == user %}var(--brand-navy);color:#fff{% else %}var(--surface-alt){% endif %};padding:10px 14px;border-radius:var(--radius-md)">
+              {{ m.body|linebreaksbr }}</div>
+            <div class="small muted">{{ m.sender }} • {{ m.created_at|date:"d M, g:i A" }}</div>
+          </div>
+          {% empty %}<p class="muted small">No messages yet.</p>{% endfor %}
+        </div>
+        <form method="post">{% csrf_token %}
+          <input type="hidden" name="action" value="message">
+          <div class="field"><textarea class="field__input field__textarea" name="body" required
+            placeholder="Write to the student…"></textarea></div>
+          <button class="btn btn--primary btn--sm" type="submit">Send message</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <aside>
+    <div class="panel">
+      <div class="panel__head"><h3>Appointments</h3></div>
+      <div class="panel__body"><ul class="stack" style="list-style:none;padding:0;margin:0">
+        {% for a in appointments %}
+        <li class="small">{{ a.start_datetime|date:"d M Y, g:i A" }}
+          <span class="badge badge--{{ a.status|status_class }}">{{ a.get_status_display }}</span></li>
+        {% empty %}<li class="small muted">None booked.</li>{% endfor %}
+      </ul></div>
+    </div>
+    <div class="panel">
+      <div class="panel__head"><h3>Academic history</h3></div>
+      <div class="panel__body"><ul class="stack" style="list-style:none;padding:0;margin:0">
+        {% for r in student.academic_records.all %}
+        <li class="small"><strong>{{ r.level }}</strong> — {{ r.institution }} ({{ r.result }}, {{ r.passing_year }})</li>
+        {% empty %}<li class="small muted">Not provided.</li>{% endfor %}
+      </ul></div>
+    </div>
+  </aside>
+</div>
+{% endblock %}

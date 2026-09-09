@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-hero"><div class="container">
+  <span class="eyebrow">Why us</span><h1>Why choose Dream Spot Global</h1>
+  <p>Advice that puts your outcome ahead of any commission.</p></div></section>
+<section class="section"><div class="container">
+  <div class="grid grid--3">
+    {% for point in why_points %}
+    <div class="icon-card"><div class="icon-card__icon">✓</div>
+      <h3>{{ point.title }}</h3><p>{{ point.description }}</p></div>
+    {% empty %}<div class="empty-state">Content coming soon.</div>{% endfor %}
+  </div>
+</div></section>
+{% if journey_steps %}
+<section class="section section--navy"><div class="container">
+  <div class="section-head section-head--center"><span class="eyebrow">Our process</span>
+    <h2>Six steps from enquiry to departure</h2></div>
+  <div class="steps">{% for step in journey_steps %}
+    <div class="step"><div class="step__num">{{ step.number }}</div><h4>{{ step.title }}</h4>
+      <p>{{ step.description }}</p></div>{% endfor %}</div>
+</div></section>
+{% endif %}
+{% endblock %}

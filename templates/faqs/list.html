@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-hero"><div class="container">
+  {% include "includes/breadcrumbs.html" %}
+  <span class="eyebrow">Help</span><h1>Frequently asked questions</h1></div></section>
+<section class="section"><div class="container" style="max-width:900px">
+  {% for category in categories %}
+    {% if category.faqs.all %}
+    <h2>{{ category.name }}</h2>
+    <div class="accordion mb-32">
+      {% for faq in category.faqs.all %}
+      <div class="accordion__item">
+        <button class="accordion__trigger" aria-expanded="false">{{ faq.question }}<span class="accordion__icon">+</span></button>
+        <div class="accordion__panel"><p>{{ faq.answer|linebreaksbr }}</p></div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  {% endfor %}
+  {% if uncategorised %}
+  <h2>General</h2>
+  <div class="accordion">{% for faq in uncategorised %}
+    <div class="accordion__item">
+      <button class="accordion__trigger" aria-expanded="false">{{ faq.question }}<span class="accordion__icon">+</span></button>
+      <div class="accordion__panel"><p>{{ faq.answer|linebreaksbr }}</p></div></div>
+  {% endfor %}</div>
+  {% endif %}
+</div></section>
+{% endblock %}

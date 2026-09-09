@@ -1,0 +1,280 @@
+{% extends "base.html" %}
+{% load dsg %}
+
+{% block content %}
+{# 1. HERO #}
+<section class="hero">
+  <div class="container">
+    <div class="hero__inner">
+      {% with slide=slides.0 %}
+      <span class="eyebrow">{{ sections.hero.eyebrow|default:"Education • Career • Immigration" }}</span>
+      <h1>{{ slide.heading|default:"Your dream university abroad starts here" }}</h1>
+      <p>{{ slide.subheading|default:"Free counselling, honest advice and end-to-end application support for Bangladeshi students applying to the UK, Australia, Canada, USA, Germany, Finland, Ireland and New Zealand." }}</p>
+      <div class="hero__actions">
+        <a class="btn btn--primary" href="{{ slide.cta_url|default:'/book-counselling/' }}">{{ slide.cta_text|default:"Book Free Counselling" }}</a>
+        <a class="btn btn--outline-light" href="{{ slide.cta2_url|default:'/study-abroad/' }}">{{ slide.cta2_text|default:"Explore Destinations" }}</a>
+      </div>
+      {% endwith %}
+    </div>
+
+    {# Quick course search (SRS FR-HOM-04) #}
+    <form class="hero__search" method="get" action="{% url 'institutions:course_list' %}" role="search">
+      <select name="country" aria-label="Destination">
+        <option value="">Any destination</option>
+        {% for c in countries %}<option value="{{ c.slug }}">{{ c.name }}</option>{% endfor %}
+      </select>
+      <select name="level" aria-label="Study level">
+        <option value="">Any study level</option>
+        {% for value, label in levels %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+      </select>
+      <select name="discipline" aria-label="Subject area">
+        <option value="">Any subject</option>
+        {% for value, label in disciplines %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+      </select>
+      <button class="btn btn--primary" type="submit">Search courses</button>
+    </form>
+  </div>
+</section>
+
+{# 2. TRUST BAR #}
+<section class="section section--tight">
+  <div class="container">
+    <div class="stats">
+      <div class="stat reveal"><div class="stat__value" data-count="{{ site.stat_students|default:'1200' }}">{{ site.stat_students|default:"1,200+" }}</div><div class="stat__label">Students placed</div></div>
+      <div class="stat reveal"><div class="stat__value" data-count="{{ site.stat_universities|default:'450' }}">{{ site.stat_universities|default:"450+" }}</div><div class="stat__label">Partner universities</div></div>
+      <div class="stat reveal"><div class="stat__value" data-count="{{ site.stat_visa_success|default:'97%' }}">{{ site.stat_visa_success|default:"97%" }}</div><div class="stat__label">Visa success rate</div></div>
+      <div class="stat reveal"><div class="stat__value" data-count="{{ site.stat_countries|default:'8' }}">{{ site.stat_countries|default:"8" }}</div><div class="stat__label">Destination countries</div></div>
+    </div>
+  </div>
+</section>
+
+{# 3. DESTINATIONS #}
+<section class="section section--alt">
+  <div class="container">
+    <div class="section-head section-head--center">
+      <span class="eyebrow">{{ sections.destinations.eyebrow|default:"Where will you study?" }}</span>
+      <h2>{{ sections.destinations.heading|default:"Popular study destinations" }}</h2>
+      <p>{{ sections.destinations.subheading|default:"Eight countries, hundreds of universities and a counsellor who knows each admission system inside out." }}</p>
+    </div>
+    <div class="grid grid--4">
+      {% for country in countries %}
+        <div class="reveal">{% include "includes/card_country.html" with country=country %}</div>
+      {% empty %}
+        <div class="empty-state">Destinations will appear here once added from the dashboard.</div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# 4. SERVICES #}
+<section class="section">
+  <div class="container">
+    <div class="section-head section-head--center">
+      <span class="eyebrow">{{ sections.services.eyebrow|default:"What we do" }}</span>
+      <h2>{{ sections.services.heading|default:"Everything you need, in one place" }}</h2>
+      <p>{{ sections.services.subheading|default:"From your first counselling session to the day you board the plane." }}</p>
+    </div>
+    <div class="grid grid--3">
+      {% for service in services %}
+      <a class="icon-card reveal" href="{{ service.get_absolute_url }}">
+        <div class="icon-card__icon">◆</div>
+        <h3>{{ service.name }}</h3>
+        <p>{{ service.short_description|default:"Speak to our team to learn more about this service." }}</p>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# 5. WHY US #}
+{% if why_points %}
+<section class="section section--alt">
+  <div class="container">
+    <div class="section-head section-head--center">
+      <span class="eyebrow">Why Dream Spot Global</span>
+      <h2>{{ sections.why_us.heading|default:"Guidance you can actually trust" }}</h2>
+    </div>
+    <div class="grid grid--3">
+      {% for point in why_points %}
+      <div class="icon-card reveal">
+        <div class="icon-card__icon">✓</div>
+        <h3>{{ point.title }}</h3><p>{{ point.description }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# 6. JOURNEY #}
+{% if journey_steps %}
+<section class="section section--navy">
+  <div class="container">
+    <div class="section-head section-head--center">
+      <span class="eyebrow">Six simple steps</span>
+      <h2>{{ sections.journey.heading|default:"Your study abroad journey" }}</h2>
+    </div>
+    <div class="steps">
+      {% for step in journey_steps %}
+      <div class="step reveal">
+        <div class="step__num">{{ step.number }}</div>
+        <h4>{{ step.title }}</h4><p>{{ step.description }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# 7. UNIVERSITIES #}
+{% if universities %}
+<section class="section">
+  <div class="container">
+    <div class="section-head section-head--center">
+      <span class="eyebrow">Our network</span>
+      <h2>Featured partner universities</h2>
+    </div>
+    <div class="grid grid--4">
+      {% for uni in universities|slice:":8" %}
+      <a class="icon-card reveal" href="{{ uni.get_absolute_url }}" style="text-align:center">
+        {% if uni.logo %}<img src="{{ uni.logo.url }}" alt="{{ uni.name }}" loading="lazy" style="height:56px;object-fit:contain;margin:0 auto 12px">{% endif %}
+        <h3 style="font-size:16px">{{ uni.name }}</h3>
+        <p class="small">{{ uni.city }}{% if uni.city %}, {% endif %}{{ uni.country.name }}</p>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# 8. SCHOLARSHIPS #}
+{% if scholarships %}
+<section class="section section--alt">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Funding your studies</span>
+      <h2>Scholarship highlights</h2>
+    </div>
+    <div class="grid grid--4">
+      {% for s in scholarships %}
+      <article class="card reveal">
+        <div class="card__body">
+          <span class="badge badge--gold">{{ s.get_award_type_display }}</span>
+          <h3 class="card__title"><a href="{{ s.get_absolute_url }}">{{ s.title }}</a></h3>
+          <div class="card__meta"><span>📍 {{ s.country.name }}</span>
+            {% if s.application_deadline %}<span>⏳ {{ s.application_deadline|date:"d M Y" }}</span>{% endif %}
+          </div>
+          <div class="card__foot"><a class="btn btn--sm btn--secondary" href="{{ s.get_absolute_url }}">Details</a></div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# 9. EVENTS #}
+{% if events %}
+<section class="section">
+  <div class="container">
+    <div class="section-head section-head--center">
+      <span class="eyebrow">Meet us</span><h2>Upcoming events</h2>
+    </div>
+    <div class="grid grid--3">
+      {% for event in events %}
+      <article class="card reveal">
+        <div class="card__media card__media--wide {% if not event.banner %}card__media--placeholder{% endif %}">
+          {% if event.banner %}<img src="{{ event.banner.url }}" alt="{{ event.title }}" loading="lazy">{% endif %}
+        </div>
+        <div class="card__body">
+          <span class="badge badge--gold">{{ event.get_event_type_display }}</span>
+          <h3 class="card__title"><a href="{{ event.get_absolute_url }}">{{ event.title }}</a></h3>
+          <div class="card__meta"><span>📅 {{ event.start_datetime|date:"d M Y, g:i A" }}</span></div>
+          <div class="card__foot"><a class="btn btn--sm btn--primary" href="{{ event.get_absolute_url }}">Register free</a></div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# 10. TESTIMONIALS #}
+{% if testimonials %}
+<section class="section section--alt">
+  <div class="container">
+    <div class="section-head section-head--center">
+      <span class="eyebrow">Success stories</span>
+      <h2>Students who are already there</h2>
+    </div>
+    <div class="grid grid--3">
+      {% for t in testimonials|slice:":6" %}
+      <div class="quote-card reveal">
+        <div class="quote-card__stars">{% stars t.rating %}</div>
+        <blockquote>“{{ t.quote }}”</blockquote>
+        <div class="quote-card__person">
+          {% if t.photo %}<img src="{{ t.photo.url }}" alt="{{ t.student_name }}" loading="lazy">
+          {% else %}<div class="avatar-fallback">{{ t.student_name|initials }}</div>{% endif %}
+          <div>
+            <strong>{{ t.student_name }}</strong>
+            <div class="small muted">{{ t.university }}{% if t.country %} • {{ t.country.name }}{% endif %}</div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="text-center mt-24">
+      <a class="btn btn--secondary" href="{% url 'testimonials:list' %}">Read all success stories</a>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# 11. BLOG #}
+{% if posts %}
+<section class="section">
+  <div class="container">
+    <div class="section-head section-head--center">
+      <span class="eyebrow">Insights</span><h2>Latest from the blog</h2>
+    </div>
+    <div class="grid grid--3">
+      {% for post in posts %}
+        <div class="reveal">{% include "includes/card_post.html" with post=post %}</div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# 12. FAQ #}
+{% if faqs %}
+<section class="section section--alt">
+  <div class="container" style="max-width:900px">
+    <div class="section-head section-head--center">
+      <span class="eyebrow">Questions</span><h2>Frequently asked questions</h2>
+    </div>
+    <div class="accordion">
+      {% for faq in faqs %}
+      <div class="accordion__item">
+        <button class="accordion__trigger" aria-expanded="false">{{ faq.question }}
+          <span class="accordion__icon">+</span></button>
+        <div class="accordion__panel"><p>{{ faq.answer|linebreaksbr }}</p></div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="text-center mt-24"><a class="btn btn--secondary" href="{% url 'faqs:list' %}">See all FAQs</a></div>
+  </div>
+</section>
+{% endif %}
+
+{# 13. CTA BAND #}
+{% include "includes/cta_band.html" with quick_form=quick_form lead_source="homepage_cta" %}
+{% endblock %}
+
+{% block schema %}
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+{% for faq in faqs %}{"@type":"Question","name":"{{ faq.question|escapejs }}",
+"acceptedAnswer":{"@type":"Answer","text":"{{ faq.answer|striptags|escapejs }}"}}{% if not forloop.last %},{% endif %}{% endfor %}]}
+</script>
+{% endblock %}

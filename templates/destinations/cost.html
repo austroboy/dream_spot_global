@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-hero"><div class="container">
+  {% include "includes/breadcrumbs.html" %}
+  <span class="eyebrow">{{ country.name }}</span><h1>Cost of living in {{ country.name }}</h1></div></section>
+<section class="section"><div class="container">
+  {% if cost %}
+  <div class="table-wrap"><table class="data">
+    <thead><tr><th>Category</th><th>Low</th><th>High</th><th>Low (BDT)</th><th>High (BDT)</th></tr></thead>
+    <tbody>{% for row in cost.rows %}
+      <tr><td>{{ row.label }}</td><td>{{ country.currency }} {{ row.low }}</td>
+      <td>{{ country.currency }} {{ row.high }}</td><td>৳{{ row.bdt_low }}</td><td>৳{{ row.bdt_high }}</td></tr>
+    {% endfor %}</tbody></table></div>
+  {% else %}<div class="empty-state">Cost data will be published shortly.</div>{% endif %}
+</div></section>
+{% endblock %}

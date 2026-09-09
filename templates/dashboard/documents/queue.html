@@ -1,0 +1,37 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% load dsg %}
+{% block page_title %}Document verification{% endblock %}
+{% block dash_content %}
+<div class="tabs">
+  {% for s in "pending,verified,rejected,reupload,all"|split_lines %}{% endfor %}
+  <a href="?status=pending" class="{% if status == 'pending' %}is-active{% endif %}">Pending</a>
+  <a href="?status=reupload" class="{% if status == 'reupload' %}is-active{% endif %}">Re-upload requested</a>
+  <a href="?status=verified" class="{% if status == 'verified' %}is-active{% endif %}">Verified</a>
+  <a href="?status=rejected" class="{% if status == 'rejected' %}is-active{% endif %}">Rejected</a>
+  <a href="?status=all" class="{% if status == 'all' %}is-active{% endif %}">All</a>
+</div>
+<div class="table-wrap"><table class="data">
+  <thead><tr><th>Student</th><th>Type</th><th>File</th><th>Status</th><th>Uploaded</th><th>Review</th></tr></thead>
+  <tbody>{% for d in page_obj %}
+    <tr>
+      <td><a href="{% url 'dashboard:student_detail' d.student.pk %}">{{ d.student.full_name }}</a></td>
+      <td>{{ d.get_document_type_display }}</td>
+      <td><a class="small" href="{% url 'dashboard:document_download' d.pk %}">{{ d.filename|truncatechars:26 }}</a></td>
+      <td><span class="badge badge--{{ d.status|status_class }}">{{ d.get_status_display }}</span></td>
+      <td class="small">{{ d.created_at|date:"d M Y" }}</td>
+      <td>
+        <form method="post" action="{% url 'dashboard:document_review' d.pk %}" class="row" style="gap:6px">
+          {% csrf_token %}
+          <select name="decision" class="field__input field__select" style="min-height:34px;font-size:13px">
+            <option value="verified">Verify</option><option value="rejected">Reject</option>
+            <option value="reupload">Request re-upload</option>
+          </select>
+          <input name="remarks" class="field__input" style="min-height:34px;font-size:13px;width:160px" placeholder="Remarks">
+          <button class="btn btn--sm btn--primary" type="submit">Save</button>
+        </form>
+      </td>
+    </tr>
+  {% empty %}<tr><td colspan="6"><div class="empty-state"><h3>Nothing in this queue</h3></div></td></tr>{% endfor %}
+  </tbody></table></div>
+{% include "includes/pagination.html" %}
+{% endblock %}

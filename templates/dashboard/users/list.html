@@ -1,0 +1,28 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block page_title %}Staff users{% endblock %}
+{% block dash_content %}
+<div class="toolbar">
+  <a class="btn btn--primary btn--sm" href="{% url 'dashboard:user_create' %}">+ New staff user</a>
+  <a class="btn btn--secondary btn--sm" href="{% url 'dashboard:roles' %}">View permission matrix</a>
+</div>
+<div class="table-wrap"><table class="data">
+  <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Designation</th><th>Open leads</th>
+    <th>Status</th><th>Last seen</th><th></th></tr></thead>
+  <tbody>{% for u in page_obj %}
+    <tr><td><strong>{{ u.get_full_name|default:u.username }}</strong></td>
+      <td class="small">{{ u.email }}</td>
+      <td><span class="badge badge--navy">{{ u.get_role_display }}</span></td>
+      <td class="small">{{ u.staff_profile.designation|default:"—" }}</td>
+      <td>{% if u.staff_profile %}{{ u.staff_profile.open_lead_count }}{% else %}—{% endif %}</td>
+      <td>{% if u.is_active %}<span class="badge badge--success">Active</span>
+          {% else %}<span class="badge badge--danger">Disabled</span>{% endif %}</td>
+      <td class="small">{{ u.last_seen|date:"d M Y"|default:"Never" }}</td>
+      <td class="row" style="gap:6px">
+        <a class="btn btn--sm btn--ghost" href="{% url 'dashboard:user_edit' u.pk %}">Edit</a>
+        <a class="btn btn--sm btn--ghost" href="{% url 'dashboard:user_toggle' u.pk %}"
+           data-confirm="Change this user's active status?">{% if u.is_active %}Disable{% else %}Enable{% endif %}</a>
+      </td></tr>
+  {% empty %}<tr><td colspan="8"><div class="empty-state"><h3>No staff users yet</h3></div></td></tr>{% endfor %}
+  </tbody></table></div>
+{% include "includes/pagination.html" %}
+{% endblock %}

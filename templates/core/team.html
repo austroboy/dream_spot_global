@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-hero"><div class="container">
+  <span class="eyebrow">Our team</span><h1>Our counsellors</h1>
+  <p>Experienced advisers for every destination we cover.</p></div></section>
+<section class="section"><div class="container">
+  <div class="grid grid--4">
+    {% for member in team %}
+    <article class="card">
+      <div class="card__media {% if not member.photo %}card__media--placeholder{% endif %}">
+        {% if member.photo %}<img src="{{ member.photo.url }}" alt="{{ member.name }}" loading="lazy">{% endif %}
+      </div>
+      <div class="card__body">
+        <h3 class="card__title">{{ member.name }}</h3>
+        <p class="small muted" style="margin:0">{{ member.designation }}</p>
+        {% if member.bio %}<p class="small">{{ member.bio|truncatechars:120 }}</p>{% endif %}
+      </div>
+    </article>
+    {% empty %}<div class="empty-state"><h3>Team profiles coming soon</h3></div>{% endfor %}
+  </div>
+</div></section>
+{% endblock %}

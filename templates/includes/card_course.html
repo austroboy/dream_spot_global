@@ -1,0 +1,24 @@
+<article class="card">
+  <div class="card__body">
+    <div class="row" style="gap:8px">
+      <span class="badge badge--gold">{{ course.get_study_level_display }}</span>
+      <span class="badge">{{ course.get_discipline_display }}</span>
+    </div>
+    <h3 class="card__title"><a href="{{ course.get_absolute_url }}">{{ course.title }}</a></h3>
+    <div class="card__meta">
+      <span>🏛 {{ course.university.name }}</span>
+      <span>📍 {{ course.university.country.name }}</span>
+    </div>
+    <div class="card__meta">
+      <span>⏱ {{ course.duration_display }}</span>
+      <span>💰 {{ course.tuition_display }}</span>
+    </div>
+    <div class="card__foot">
+      <a class="btn btn--sm btn--secondary" href="{{ course.get_absolute_url }}">View course</a>
+      <button type="button" class="chip {% if course.id in shortlisted %}chip--active{% endif %}"
+              data-shortlist="{% url 'institutions:toggle_shortlist' course.pk %}">
+        {% if course.id in shortlisted %}★ Shortlisted{% else %}☆ Shortlist{% endif %}
+      </button>
+    </div>
+  </div>
+</article>

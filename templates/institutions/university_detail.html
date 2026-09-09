@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-hero {% if university.cover_image %}page-hero--image{% endif %}"
+  {% if university.cover_image %}style="background-image:url('{{ university.cover_image.url }}')"{% endif %}>
+  <div class="container">
+    {% include "includes/breadcrumbs.html" %}
+    <span class="eyebrow">{{ university.country.name }}</span>
+    <h1>{{ university.name }}</h1>
+    <p>{{ university.city }}{% if university.established_year %} • Established {{ university.established_year }}{% endif %}</p>
+  </div>
+</section>
+<section class="section section--tight section--alt"><div class="container"><div class="stats">
+  <div class="stat"><div class="stat__value" style="font-size:24px">{% if university.world_ranking %}#{{ university.world_ranking }}{% else %}—{% endif %}</div><div class="stat__label">World ranking</div></div>
+  <div class="stat"><div class="stat__value" style="font-size:24px">{{ university.get_university_type_display }}</div><div class="stat__label">Institution type</div></div>
+  <div class="stat"><div class="stat__value" style="font-size:24px">{% if university.acceptance_rate %}{{ university.acceptance_rate }}%{% else %}—{% endif %}</div><div class="stat__label">Acceptance rate</div></div>
+  <div class="stat"><div class="stat__value" style="font-size:24px">{{ university.international_students|default:"—" }}</div><div class="stat__label">International students</div></div>
+</div></div></section>
+<section class="section"><div class="container grid grid--sidebar">
+  <div>
+    <div class="prose">{{ university.description|linebreaks }}</div>
+    {% if university.facility_items %}
+    <h2>Campus facilities</h2>
+    <div class="row">{% for f in university.facility_items %}<span class="chip">{{ f }}</span>{% endfor %}</div>
+    {% endif %}
+    {% if courses %}
+    <h2 class="mt-24">Popular courses</h2>
+    <div class="grid grid--2">{% for c in courses %}{% include "includes/card_course.html" with course=c %}{% endfor %}</div>
+    <a class="btn btn--secondary mt-24" href="{% url 'institutions:course_list' %}?university={{ university.slug }}">All courses at {{ university.name }}</a>
+    {% endif %}
+    {% if scholarships %}
+    <h2 class="mt-24">Scholarships</h2>
+    <div class="grid grid--2">{% for s in scholarships %}
+      <article class="card"><div class="card__body">
+        <h3 class="card__title"><a href="{{ s.get_absolute_url }}">{{ s.title }}</a></h3></div></article>
+    {% endfor %}</div>
+    {% endif %}
+  </div>
+  {% include "includes/sidebar_form.html" with form=form lead_source="course_page" %}
+</div></section>
+{% endblock %}

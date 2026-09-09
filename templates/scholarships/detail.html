@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-hero"><div class="container">
+  {% include "includes/breadcrumbs.html" %}
+  <span class="eyebrow">{{ scholarship.get_award_type_display }}</span>
+  <h1>{{ scholarship.title }}</h1>
+  <p>{{ scholarship.provider }}{% if scholarship.country %} • {{ scholarship.country.name }}{% endif %}</p>
+</div></section>
+<section class="section"><div class="container grid grid--sidebar">
+  <div>
+    <div class="grid grid--3 mb-32">
+      <div class="stat"><div class="stat__value" style="font-size:20px">{{ scholarship.award_amount|default:"Varies" }}</div><div class="stat__label">Award</div></div>
+      <div class="stat"><div class="stat__value" style="font-size:20px">{{ scholarship.study_level|default:"All levels" }}</div><div class="stat__label">Study level</div></div>
+      <div class="stat"><div class="stat__value" style="font-size:20px">{{ scholarship.application_deadline|date:"d M Y"|default:"Rolling" }}</div><div class="stat__label">Deadline</div></div>
+    </div>
+    <div class="prose">
+      {{ scholarship.description|linebreaks }}
+      {% if scholarship.eligibility %}<h2>Eligibility</h2>{{ scholarship.eligibility|linebreaks }}{% endif %}
+    </div>
+    {% if scholarship.document_items %}
+    <h2>Required documents</h2>
+    <div class="grid grid--2">{% for d in scholarship.document_items %}
+      <div class="row" style="gap:10px"><span class="badge badge--gold">✓</span><span>{{ d }}</span></div>
+    {% endfor %}</div>
+    {% endif %}
+    {% if scholarship.official_link %}
+    <a class="btn btn--secondary mt-24" href="{{ scholarship.official_link }}" target="_blank" rel="noopener">Official scholarship page ↗</a>
+    {% endif %}
+  </div>
+  {% include "includes/sidebar_form.html" with form=form lead_source="scholarship_page" %}
+</div></section>
+{% endblock %}

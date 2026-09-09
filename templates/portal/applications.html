@@ -1,0 +1,27 @@
+{% extends "portal/base_portal.html" %}
+{% block portal_title %}My applications{% endblock %}
+{% block portal_content %}
+{% if applications %}
+<div class="grid grid--2">
+  {% for app in applications %}
+  <article class="card"><div class="card__body">
+    <div class="row row--between">
+      <span class="badge badge--navy">{{ app.reference_no }}</span>
+      <span class="badge badge--gold">{{ app.get_stage_display }}</span>
+    </div>
+    <h3 class="card__title"><a href="{% url 'portal:application_detail' app.pk %}">{{ app.course.title }}</a></h3>
+    <div class="card__meta"><span>🏛 {{ app.university.name }}</span><span>📅 {{ app.intake }}</span></div>
+    <div class="progress"><div class="progress__bar" style="width:{{ app.progress_percent }}%"></div></div>
+    <div class="card__foot">
+      <a class="btn btn--sm btn--secondary" href="{% url 'portal:application_detail' app.pk %}">Track application</a>
+      <span class="small muted">{{ app.progress_percent }}%</span>
+    </div>
+  </div></article>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state"><h3>No applications yet</h3>
+  <p>Once your counsellor submits an application it will appear here with live status.</p>
+  <a class="btn btn--primary" href="{% url 'institutions:course_list' %}">Browse courses</a></div>
+{% endif %}
+{% endblock %}

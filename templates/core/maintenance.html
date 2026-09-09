@@ -1,0 +1,9 @@
+{% load static %}<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>We will be right back</title>
+{% include "includes/favicon.html" %}
+<link rel="stylesheet" href="{% static 'css/brand.css' %}"></head>
+<body><section class="section" style="min-height:100vh;display:grid;place-items:center">
+<div class="container text-center" style="max-width:560px">
+<span class="eyebrow">Dream Spot Global</span><h1>We will be right back</h1>
+<p class="muted">{{ settings_obj.maintenance_message|default:"Our website is briefly down for scheduled maintenance. Please call us on +880 1410-157209 in the meantime." }}</p>
+</div></section></body></html>

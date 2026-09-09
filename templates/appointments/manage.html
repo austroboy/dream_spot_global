@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-hero"><div class="container">
+  <span class="eyebrow">Your booking</span><h1>Manage your appointment</h1></div></section>
+<section class="section"><div class="container" style="max-width:760px">
+  <div class="form-card mb-32">
+    <dl class="def-list">
+      <dt>Name</dt><dd>{{ appointment.full_name }}</dd>
+      <dt>When</dt><dd>{{ appointment.start_datetime|date:"l d F Y, g:i A" }}</dd>
+      <dt>Mode</dt><dd>{{ appointment.get_mode_display }}</dd>
+      <dt>Status</dt><dd>{{ appointment.get_status_display }}</dd>
+    </dl>
+  </div>
+
+  {% if appointment.status != "cancelled" %}
+  <div class="form-card mb-32">
+    <h3>Reschedule</h3>
+    <form method="post">{% csrf_token %}
+      <input type="hidden" name="action" value="reschedule">
+      <input type="hidden" name="slot" id="id_slot">
+      {% for day, slots in calendar.items %}
+      <p class="small muted" style="margin:14px 0 6px"><strong>{{ day|date:"D d M" }}</strong></p>
+      <div class="row">{% for slot in slots %}
+        <button type="button" class="chip" data-slot="{{ slot.iso }}"
+                data-label="{{ day|date:'D d M' }} at {{ slot.label }}">{{ slot.label }}</button>
+      {% endfor %}</div>
+      {% empty %}<p class="muted">No alternative slots available — please call us.</p>{% endfor %}
+      <p class="small muted mt-24">New time: <strong id="slot-summary">none selected</strong></p>
+      <button class="btn btn--primary" type="submit">Confirm new time</button>
+    </form>
+  </div>
+
+  <form method="post" class="form-card">{% csrf_token %}
+    <input type="hidden" name="action" value="cancel">
+    <h3>Cancel appointment</h3>
+    <p class="small muted">Let us know if you can no longer attend so we can free the slot.</p>
+    <button class="btn btn--danger" type="submit"
+            data-confirm="Cancel this appointment? This cannot be undone.">Cancel my appointment</button>
+  </form>
+  {% endif %}
+</div></section>
+{% endblock %}

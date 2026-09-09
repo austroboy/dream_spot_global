@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load dsg %}
+{% block content %}
+<section class="page-hero"><div class="container">
+  {% include "includes/breadcrumbs.html" %}
+  <span class="eyebrow">Success stories</span><h1>Students we have sent abroad</h1></div></section>
+<section class="section"><div class="container">
+  <div class="row mb-32">
+    <a class="chip {% if not selected_country %}chip--active{% endif %}" href="{% url 'testimonials:list' %}">All</a>
+    {% for c in countries %}<a class="chip {% if selected_country == c.slug %}chip--active{% endif %}" href="?country={{ c.slug }}">{{ c.name }}</a>{% endfor %}
+  </div>
+  <div class="grid grid--3">
+    {% for t in page_obj %}
+    <div class="quote-card">
+      <div class="quote-card__stars">{% stars t.rating %}</div>
+      <blockquote>“{{ t.quote }}”</blockquote>
+      {% if t.story %}<p class="small muted">{{ t.story|truncatechars:180 }}</p>{% endif %}
+      <div class="quote-card__person">
+        {% if t.photo %}<img src="{{ t.photo.url }}" alt="{{ t.student_name }}" loading="lazy">
+        {% else %}<div class="avatar-fallback">{{ t.student_name|initials }}</div>{% endif %}
+        <div><strong>{{ t.student_name }}</strong>
+          <div class="small muted">{{ t.university }}{% if t.country %} • {{ t.country.name }}{% endif %}</div></div>
+      </div>
+    </div>
+    {% empty %}<div class="empty-state" style="grid-column:1/-1"><h3>Stories coming soon</h3></div>{% endfor %}
+  </div>
+  {% include "includes/pagination.html" %}
+</div></section>
+{% endblock %}

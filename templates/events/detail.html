@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-hero {% if event.banner %}page-hero--image{% endif %}"
+  {% if event.banner %}style="background-image:url('{{ event.banner.url }}')"{% endif %}>
+  <div class="container">
+    {% include "includes/breadcrumbs.html" %}
+    <span class="eyebrow">{{ event.get_event_type_display }}</span>
+    <h1>{{ event.title }}</h1>
+    <p>{{ event.start_datetime|date:"l d F Y, g:i A" }} • {{ event.venue|default:"Online" }}</p>
+  </div>
+</section>
+<section class="section"><div class="container grid grid--sidebar">
+  <div>
+    <div class="prose">{{ event.description|linebreaks }}</div>
+    {% if event.universities.all %}
+    <h2>Participating universities</h2>
+    <div class="row">{% for u in event.universities.all %}<a class="chip" href="{{ u.get_absolute_url }}">{{ u.name }}</a>{% endfor %}</div>
+    {% endif %}
+    {% if event.countries.all %}
+    <h2 class="mt-24">Destinations covered</h2>
+    <div class="row">{% for c in event.countries.all %}<a class="chip" href="{{ c.get_absolute_url }}">{{ c.name }}</a>{% endfor %}</div>
+    {% endif %}
+  </div>
+  <aside class="form-card">
+    {% if event.registration_open %}
+      <span class="eyebrow">Free entry</span>
+      <h3>Register for this event</h3>
+      {% if event.is_full %}<p class="badge badge--warning mb-16">Capacity reached — you will join the waitlist.</p>
+      {% else %}<p class="small muted mb-16">{{ event.seats_left }} of {{ event.capacity }} seats remaining.</p>{% endif %}
+      <form method="post">{% csrf_token %}
+        {% include "includes/form.html" with form=form %}
+        <button class="btn btn--primary btn--block" type="submit">Confirm my seat</button>
+      </form>
+    {% else %}
+      <h3>Registration closed</h3>
+      <p class="small muted">This event is no longer accepting registrations.</p>
+      <a class="btn btn--primary btn--block" href="{% url 'appointments:book' %}">Book a counselling session instead</a>
+    {% endif %}
+  </aside>
+</div></section>
+{% endblock %}
+{% block schema %}
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Event","name":"{{ event.title|escapejs }}",
+"startDate":"{{ event.start_datetime|date:'c' }}",
+"eventAttendanceMode":"https://schema.org/{% if event.is_online %}Online{% else %}Offline{% endif %}EventAttendanceMode",
+"location":{"@type":"Place","name":"{{ event.venue|default:'Online'|escapejs }}"}}
+</script>
+{% endblock %}

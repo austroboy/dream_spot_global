@@ -1,0 +1,89 @@
+{% extends "portal/base_portal.html" %}
+{% block portal_title %}Welcome back, {{ user.first_name|default:user.username }}{% endblock %}
+{% block portal_content %}
+<div class="grid grid--4 mb-32">
+  <div class="stat"><div class="stat__value" style="font-size:28px">{{ profile.completeness }}%</div><div class="stat__label">Profile complete</div></div>
+  <div class="stat"><div class="stat__value" style="font-size:28px">{{ applications.count }}</div><div class="stat__label">Applications</div></div>
+  <div class="stat"><div class="stat__value" style="font-size:28px">{{ pending_docs }}</div><div class="stat__label">Documents pending</div></div>
+  <div class="stat"><div class="stat__value" style="font-size:28px">{{ unread }}</div><div class="stat__label">Unread messages</div></div>
+</div>
+
+<div class="grid grid--sidebar">
+  <div>
+    {% if primary_application %}
+    <div class="form-card mb-32">
+      <div class="row row--between">
+        <h2 style="margin:0">{{ primary_application.reference_no }}</h2>
+        <span class="badge badge--gold">{{ primary_application.get_stage_display }}</span>
+      </div>
+      <p class="small muted">{{ primary_application.course.title }} — {{ primary_application.university.name }}</p>
+      <div class="progress mb-24"><div class="progress__bar" style="width:{{ primary_application.progress_percent }}%"></div></div>
+      <div class="timeline">
+        {% for stage in primary_application.timeline %}
+        <div class="timeline__item {% if stage.done %}is-done{% elif stage.current %}is-current{% endif %}">
+          <div class="timeline__title">{{ stage.label }}</div>
+        </div>
+        {% endfor %}
+      </div>
+      <a class="btn btn--secondary mt-24" href="{% url 'portal:application_detail' primary_application.pk %}">View full application</a>
+    </div>
+    {% else %}
+    <div class="empty-state mb-32">
+      <h3>No application started yet</h3>
+      <p>Complete your profile and book a counselling session to get going.</p>
+      <a class="btn btn--primary" href="{% url 'appointments:book' %}">Book free counselling</a>
+    </div>
+    {% endif %}
+
+    {% if recommended %}
+    <h2>Recommended for you</h2>
+    <div class="grid grid--2">{% for c in recommended %}{% include "includes/card_course.html" with course=c %}{% endfor %}</div>
+    {% endif %}
+  </div>
+
+  <aside class="stack">
+    <div class="form-card">
+      <h3>Next action</h3>
+      {% if profile.completeness < 80 %}
+        <p class="small muted">Your profile is {{ profile.completeness }}% complete. Universities need the full picture.</p>
+        <a class="btn btn--primary btn--block" href="{% url 'portal:profile' %}">Complete my profile</a>
+      {% elif pending_docs %}
+        <p class="small muted">{{ pending_docs }} document(s) awaiting review or re-upload.</p>
+        <a class="btn btn--primary btn--block" href="{% url 'portal:documents' %}">Go to documents</a>
+      {% else %}
+        <p class="small muted">You are all up to date. Your counsellor will be in touch.</p>
+        <a class="btn btn--secondary btn--block" href="{% url 'portal:messages' %}">Message my counsellor</a>
+      {% endif %}
+    </div>
+
+    {% if next_appointment %}
+    <div class="form-card">
+      <h3>Next appointment</h3>
+      <p class="small"><strong>{{ next_appointment.start_datetime|date:"D d M, g:i A" }}</strong><br>
+        {{ next_appointment.get_mode_display }}</p>
+      <a class="btn btn--secondary btn--block" href="{% url 'appointments:manage' next_appointment.token %}">Reschedule</a>
+    </div>
+    {% endif %}
+
+    {% if profile.assigned_counsellor %}
+    <div class="form-card">
+      <h3>Your counsellor</h3>
+      <p class="small"><strong>{{ profile.assigned_counsellor.full_name }}</strong><br>
+        <span class="muted">{{ profile.assigned_counsellor.designation }}</span></p>
+      <a class="btn btn--secondary btn--block" href="{% url 'portal:messages' %}">Send a message</a>
+    </div>
+    {% endif %}
+
+    {% if notifications %}
+    <div class="form-card">
+      <h3>Recent updates</h3>
+      <ul class="stack" style="list-style:none;padding:0;margin:0">
+        {% for n in notifications %}
+        <li class="small"><strong>{{ n.title }}</strong><br><span class="muted">{{ n.created_at|date:"d M" }}</span></li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+  </aside>
+</div>
+{% endblock %}

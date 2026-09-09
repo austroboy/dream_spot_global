@@ -1,0 +1,20 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block page_title %}Site settings{% endblock %}
+{% block dash_content %}
+<div class="panel" style="max-width:1000px">
+  <div class="panel__head"><h2>Company information, branding and integrations</h2></div>
+  <div class="panel__body">
+    <p class="small muted mb-16">Everything here appears on the public website. Nothing is hard-coded.</p>
+    <form method="post" enctype="multipart/form-data">{% csrf_token %}
+      <div class="form-grid">
+        {% for field in form.visible_fields %}
+          {% if field.name == "about_short" or field.name == "map_embed" or field.name == "maintenance_message" or field.name == "default_meta_description" %}
+            {% include "includes/field.html" with field=field wrapper_class="field--full" %}
+          {% else %}{% include "includes/field.html" with field=field %}{% endif %}
+        {% endfor %}
+      </div>
+      <button class="btn btn--primary" type="submit">Save settings</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

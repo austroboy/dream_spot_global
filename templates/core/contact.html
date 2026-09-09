@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-hero"><div class="container">
+  {% include "includes/breadcrumbs.html" %}
+  <span class="eyebrow">Contact</span><h1>Talk to Dream Spot Global</h1>
+  <p>Visit our Uttara office, call us, or send the form — we reply within one working day.</p>
+</div></section>
+
+<section class="section"><div class="container grid grid--sidebar">
+  <div class="form-card">
+    <h2>Send us a message</h2>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      <div class="form-grid">
+        {% for field in form.visible_fields %}
+          {% include "includes/field.html" with field=field wrapper_class=field.name|slice:":0" %}
+        {% endfor %}
+      </div>
+      {% for field in form.hidden_fields %}{{ field }}{% endfor %}
+      <button class="btn btn--primary" type="submit">Send message</button>
+    </form>
+  </div>
+
+  <div class="stack">
+    <div class="form-card">
+      <h3>Head office</h3>
+      <p class="small">{{ site.address|default:"House 21, Road 01, Sector 9, Uttara, Dhaka, Bangladesh" }}</p>
+      <p class="small"><strong>Phone</strong><br>
+        <a href="tel:{{ site.phone_primary }}">{{ site.phone_primary }}</a>
+        {% if site.phone_secondary %}<br><a href="tel:{{ site.phone_secondary }}">{{ site.phone_secondary }}</a>{% endif %}
+      </p>
+      <p class="small"><strong>Email</strong><br><a href="mailto:{{ site.email }}">{{ site.email }}</a></p>
+      {% if site.office_hours %}<p class="small"><strong>Office hours</strong><br>{{ site.office_hours }}</p>{% endif %}
+      {% if site.whatsapp_link %}<a class="btn btn--primary btn--block" href="{{ site.whatsapp_link }}" target="_blank" rel="noopener">Chat on WhatsApp</a>{% endif %}
+    </div>
+    {% if site.map_embed %}<div class="form-card">{{ site.map_embed|safe }}</div>{% endif %}
+  </div>
+</div></section>
+{% endblock %}

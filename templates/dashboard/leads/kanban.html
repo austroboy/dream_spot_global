@@ -1,0 +1,22 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% load dsg %}
+{% block page_title %}Lead pipeline{% endblock %}
+{% block dash_content %}
+<p class="muted mb-24">Drag a card to another column to change its status. Every move is logged.</p>
+<div class="kanban">
+  {% for col in columns %}
+  <div class="kanban__col" data-status="{{ col.status }}">
+    <div class="kanban__head">{{ col.label }}<span class="badge">{{ col.count }}</span></div>
+    <div class="kanban__list">
+      {% for lead in col.items %}
+      <div class="kanban__card" data-move-url="{% url 'dashboard:lead_move' lead.pk %}">
+        <strong><a href="{% url 'dashboard:lead_detail' lead.pk %}">{{ lead.full_name }}</a></strong>
+        <div class="small muted">{{ lead.phone }}</div>
+        <div class="small muted">{{ lead.destination_names|truncatechars:24 }}</div>
+      </div>
+      {% empty %}<p class="small muted">Empty</p>{% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

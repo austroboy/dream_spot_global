@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    {% include "includes/breadcrumbs.html" with crumbs=crumbs %}
+    <span class="eyebrow">About us</span>
+    <h1>Dream Spot Global</h1>
+    <p>Education • Career • Immigration — guiding Bangladeshi students since day one.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container grid grid--sidebar">
+    <div class="prose">
+      <span class="eyebrow">Who we are</span>
+      <h2>An education consultancy built around honest advice</h2>
+      <p>{{ site.about_short|default:"Dream Spot Global is a study abroad education consultancy based in Uttara, Dhaka. We help students and their families make one of the biggest decisions of their lives — where to study, what to study, and how to pay for it — with clear, honest guidance at every step." }}</p>
+      <p>We work with universities across the United Kingdom, Australia, Canada, the United States, Germany, Finland, Ireland and New Zealand. Our counsellors assess each profile individually rather than pushing whichever university pays the highest commission.</p>
+      <h3>What makes us different</h3>
+      <ul>
+        <li>Free counselling and profile assessment with no obligation.</li>
+        <li>Realistic university shortlists matched to your grades and budget.</li>
+        <li>Complete application handling: SOP, LORs, documents and visa filing.</li>
+        <li>Pre-departure briefing so you land prepared, not overwhelmed.</li>
+      </ul>
+    </div>
+    <div class="stack">
+      <div class="form-card">
+        <h3>Visit our office</h3>
+        <p class="small muted">{{ site.address }}</p>
+        <p class="small"><strong>Phone:</strong> {{ site.phone_primary }}{% if site.phone_secondary %}, {{ site.phone_secondary }}{% endif %}</p>
+        <p class="small"><strong>Email:</strong> {{ site.email }}</p>
+        <a class="btn btn--primary btn--block" href="{% url 'appointments:book' %}">Book free counselling</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% if journey_steps %}
+<section class="section section--navy">
+  <div class="container">
+    <div class="section-head section-head--center">
+      <span class="eyebrow">How we work</span><h2>Your study abroad journey</h2>
+    </div>
+    <div class="steps">
+      {% for step in journey_steps %}
+      <div class="step"><div class="step__num">{{ step.number }}</div>
+        <h4>{{ step.title }}</h4><p>{{ step.description }}</p></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if team %}
+<section class="section section--alt">
+  <div class="container">
+    <div class="section-head section-head--center">
+      <span class="eyebrow">Our people</span><h2>Meet the counsellors</h2>
+    </div>
+    <div class="grid grid--4">
+      {% for member in team %}
+      <article class="card">
+        <div class="card__media {% if not member.photo %}card__media--placeholder{% endif %}">
+          {% if member.photo %}<img src="{{ member.photo.url }}" alt="{{ member.name }}" loading="lazy">{% endif %}
+        </div>
+        <div class="card__body">
+          <h3 class="card__title">{{ member.name }}</h3>
+          <p class="small muted" style="margin:0">{{ member.designation }}</p>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

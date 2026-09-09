@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-hero"><div class="container">
+  {% include "includes/breadcrumbs.html" %}
+  <span class="eyebrow">{{ country.name }}</span><h1>{{ country.name }} student visa guide</h1></div></section>
+<section class="section"><div class="container" style="max-width:840px">
+  <div class="prose">{{ country.visa_process|linebreaks }}</div>
+  <div class="accordion">{% for item in items %}
+    <div class="accordion__item">
+      <button class="accordion__trigger" aria-expanded="false">{{ item.title }}<span class="accordion__icon">+</span></button>
+      <div class="accordion__panel"><p>{{ item.description|linebreaksbr }}</p></div>
+    </div>{% endfor %}</div>
+</div></section>
+{% endblock %}

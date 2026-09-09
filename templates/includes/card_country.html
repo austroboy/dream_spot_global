@@ -1,0 +1,18 @@
+<article class="card card--flag">
+  <div class="card__media {% if not country.card_image %}card__media--placeholder{% endif %}">
+    {% if country.card_image %}
+      <img src="{{ country.card_image.url }}" alt="Study in {{ country.name }}" loading="lazy" width="600" height="375">
+    {% endif %}
+  </div>
+  <div class="card__body">
+    <h3 class="card__title">{{ country.name }}</h3>
+    <p class="small muted" style="margin:0">{{ country.tagline|default:"World-class universities and strong post-study work rights." }}</p>
+    <div class="card__meta">
+      <span>🎓 {{ country.universities.count }} universities</span>
+      {% if country.visa_duration %}<span>🛂 {{ country.visa_duration }}</span>{% endif %}
+    </div>
+    <div class="card__foot">
+      <a class="btn btn--sm btn--secondary" href="{{ country.get_absolute_url }}">Study in {{ country.name }}</a>
+    </div>
+  </div>
+</article>

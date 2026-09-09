@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-hero"><div class="container">
+  {% include "includes/breadcrumbs.html" %}
+  <span class="eyebrow">Study abroad</span><h1>Choose your destination</h1>
+  <p>Eight countries, one dedicated counsellor for each admission system.</p>
+</div></section>
+<section class="section"><div class="container">
+  <div class="grid grid--3">
+    {% for country in countries %}{% include "includes/card_country.html" with country=country %}{% endfor %}
+  </div>
+  <div class="text-center mt-24">
+    <a class="btn btn--secondary" href="{% url 'destinations:compare' %}">Compare destinations side by side</a>
+  </div>
+</div></section>
+{% endblock %}

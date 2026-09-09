@@ -1,0 +1,29 @@
+{% extends "portal/base_portal.html" %}
+{% load dsg %}
+{% block portal_title %}My appointments{% endblock %}
+{% block portal_content %}
+<h2>Upcoming</h2>
+{% if upcoming %}
+<div class="table-wrap mb-32"><table class="data">
+  <thead><tr><th>When</th><th>Mode</th><th>Counsellor</th><th>Status</th><th></th></tr></thead>
+  <tbody>{% for a in upcoming %}
+    <tr><td><strong>{{ a.start_datetime|date:"D d M Y, g:i A" }}</strong></td>
+      <td>{{ a.get_mode_display }}</td>
+      <td>{{ a.counsellor.full_name|default:"To be assigned" }}</td>
+      <td><span class="badge badge--{{ a.status|status_class }}">{{ a.get_status_display }}</span></td>
+      <td><a class="btn btn--sm btn--ghost" href="{% url 'appointments:manage' a.token %}">Manage</a></td></tr>
+  {% endfor %}</tbody></table></div>
+{% else %}
+<div class="empty-state mb-32"><h3>No upcoming sessions</h3>
+  <a class="btn btn--primary" href="{% url 'appointments:book' %}">Book free counselling</a></div>
+{% endif %}
+{% if past %}
+<h2>Past</h2>
+<div class="table-wrap"><table class="data">
+  <thead><tr><th>When</th><th>Mode</th><th>Status</th></tr></thead>
+  <tbody>{% for a in past %}
+    <tr><td>{{ a.start_datetime|date:"d M Y, g:i A" }}</td><td>{{ a.get_mode_display }}</td>
+      <td><span class="badge badge--{{ a.status|status_class }}">{{ a.get_status_display }}</span></td></tr>
+  {% endfor %}</tbody></table></div>
+{% endif %}
+{% endblock %}

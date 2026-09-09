@@ -1,0 +1,15 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block page_title %}Confirm delete{% endblock %}
+{% block dash_content %}
+<div class="panel" style="max-width:560px">
+  <div class="panel__head"><h2>Delete this record?</h2></div>
+  <div class="panel__body">
+    <p>You are about to permanently delete <strong>{{ object }}</strong> from {{ cfg.label }}.</p>
+    <p class="small muted">Related records that depend on it may block the deletion.</p>
+    <form method="post">{% csrf_token %}
+      <button class="btn btn--danger" type="submit">Yes, delete</button>
+      <a class="btn btn--ghost" href="{% url 'dashboard:content_list' key %}">Cancel</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

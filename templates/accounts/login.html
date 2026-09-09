@@ -1,0 +1,11 @@
+{% extends "accounts/auth_base.html" %}
+{% block auth_title %}Sign in to your account{% endblock %}
+{% block auth_body %}
+<form method="post" novalidate>{% csrf_token %}
+  {% include "includes/form.html" with form=form %}
+  <button class="btn btn--primary btn--block" type="submit">Sign in</button>
+</form>
+<p class="small text-center mt-24">
+  <a href="{% url 'accounts:password_reset' %}">Forgot your password?</a></p>
+<p class="small text-center">New here? <a href="{% url 'accounts:register' %}">Create a student account</a></p>
+{% endblock %}

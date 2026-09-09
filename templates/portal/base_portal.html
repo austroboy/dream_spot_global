@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-hero" style="padding:44px 0">
+  <div class="container">
+    <span class="eyebrow">Student portal</span>
+    <h1 style="font-size:28px">{% block portal_title %}My dashboard{% endblock %}</h1>
+  </div>
+</section>
+<section class="section section--tight"><div class="container">
+  <div class="tabs">
+    <a href="{% url 'portal:home' %}" class="{% if request.resolver_match.url_name == 'home' %}is-active{% endif %}">Overview</a>
+    <a href="{% url 'portal:profile' %}" class="{% if request.resolver_match.url_name == 'profile' %}is-active{% endif %}">Profile</a>
+    <a href="{% url 'portal:documents' %}" class="{% if request.resolver_match.url_name == 'documents' %}is-active{% endif %}">Documents</a>
+    <a href="{% url 'portal:applications' %}" class="{% if 'application' in request.resolver_match.url_name %}is-active{% endif %}">Applications</a>
+    <a href="{% url 'portal:appointments' %}" class="{% if request.resolver_match.url_name == 'appointments' %}is-active{% endif %}">Appointments</a>
+    <a href="{% url 'portal:shortlist' %}" class="{% if request.resolver_match.url_name == 'shortlist' %}is-active{% endif %}">Shortlist</a>
+    <a href="{% url 'portal:messages' %}" class="{% if request.resolver_match.url_name == 'messages' %}is-active{% endif %}">Messages</a>
+    <a href="{% url 'portal:notifications' %}" class="{% if request.resolver_match.url_name == 'notifications' %}is-active{% endif %}">Notifications{% if unread_notifications %} ({{ unread_notifications }}){% endif %}</a>
+  </div>
+  {% block portal_content %}{% endblock %}
+</div></section>
+{% endblock %}

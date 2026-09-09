@@ -1,0 +1,74 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% load dsg %}
+{% block page_title %}{{ application.reference_no }}{% endblock %}
+{% block dash_content %}
+<div class="detail-grid">
+  <div>
+    <div class="panel panel--gold">
+      <div class="panel__head">
+        <h2>{{ application.reference_no }}</h2>
+        <span class="badge badge--gold">{{ application.get_stage_display }}</span>
+      </div>
+      <div class="panel__body">
+        <p><strong>{{ application.course.title }}</strong><br>
+          <span class="muted">{{ application.university.name }} — {{ application.university.country.name }}</span></p>
+        <div class="progress mb-24"><div class="progress__bar" style="width:{{ application.progress_percent }}%"></div></div>
+        <div class="timeline">
+          {% for stage in application.timeline %}
+          <div class="timeline__item {% if stage.done %}is-done{% elif stage.current %}is-current{% endif %}">
+            <div class="timeline__title">{{ stage.label }}</div></div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel__head"><h2>Edit application</h2></div>
+      <div class="panel__body">
+        <form method="post">{% csrf_token %}
+          <input type="hidden" name="action" value="save">
+          <div class="form-grid">
+            {% for field in form.visible_fields %}{% include "includes/field.html" with field=field %}{% endfor %}
+          </div>
+          <button class="btn btn--primary" type="submit">Save changes</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel__head"><h2>Stage history</h2></div>
+      <div class="panel__body"><div class="timeline">
+        {% for h in history %}
+        <div class="timeline__item is-done">
+          <div class="timeline__title">{{ h.from_stage|default:"—" }} → {{ h.to_stage }}</div>
+          <div class="timeline__meta">{{ h.actor|default:"System" }} • {{ h.created_at|date:"d M Y, g:i A" }}</div>
+          {% if h.note %}<div class="small">{{ h.note }}</div>{% endif %}
+        </div>
+        {% empty %}<p class="muted small">No transitions logged yet.</p>{% endfor %}
+      </div></div>
+    </div>
+  </div>
+
+  <aside>
+    <div class="panel panel--gold">
+      <div class="panel__head"><h3>Move to next stage</h3></div>
+      <div class="panel__body"><form method="post">
+        {% csrf_token %}<input type="hidden" name="action" value="stage">
+        {% include "includes/form.html" with form=stage_form %}
+        <button class="btn btn--primary btn--block btn--sm" type="submit">Update stage</button>
+      </form></div>
+    </div>
+    <div class="panel">
+      <div class="panel__head"><h3>Student documents</h3></div>
+      <div class="panel__body"><ul class="stack" style="list-style:none;padding:0;margin:0">
+        {% for d in documents %}
+        <li class="small row row--between">{{ d.get_document_type_display }}
+          <span class="badge badge--{{ d.status|status_class }}">{{ d.get_status_display }}</span></li>
+        {% empty %}<li class="small muted">No documents.</li>{% endfor %}
+      </ul>
+      <a class="btn btn--secondary btn--block btn--sm mt-24" href="{% url 'dashboard:student_detail' application.student.pk %}">Open student file</a>
+      </div>
+    </div>
+  </aside>
+</div>
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% load dsg %}
+{% block page_title %}Dashboard{% endblock %}
+{% block dash_content %}
+<form class="toolbar" method="get">
+  <label class="small muted">Period</label>
+  <select name="range" onchange="this.form.submit()">
+    <option value="today" {% if preset == "today" %}selected{% endif %}>Today</option>
+    <option value="7" {% if preset == "7" %}selected{% endif %}>Last 7 days</option>
+    <option value="30" {% if preset == "30" %}selected{% endif %}>Last 30 days</option>
+    <option value="90" {% if preset == "90" %}selected{% endif %}>Last 90 days</option>
+  </select>
+  <span class="small muted">{{ start|date:"d M Y" }} → {{ end|date:"d M Y" }}</span>
+</form>
+
+<div class="kpis">
+  {% for kpi in kpis %}
+  <div class="kpi">
+    <div class="kpi__label">{{ kpi.label }}</div>
+    <div class="kpi__value">{{ kpi.value }}</div>
+    {% if kpi.delta is not None %}
+      <div class="kpi__delta {% if kpi.delta >= 0 %}up{% else %}down{% endif %}">
+        {% if kpi.delta >= 0 %}▲{% else %}▼{% endif %} {{ kpi.delta }}% vs previous period</div>
+    {% endif %}
+  </div>
+  {% endfor %}
+</div>
+
+<div data-charts-url="{% url 'dashboard:charts' %}?range={{ preset }}"></div>
+<div class="chart-grid">
+  <div class="panel panel--gold">
+    <div class="panel__head"><h2>Leads over time</h2></div>
+    <div class="panel__body"><div class="chart-box"><canvas id="chartLeads"></canvas></div></div>
+  </div>
+  <div class="panel">
+    <div class="panel__head"><h2>Leads by source</h2></div>
+    <div class="panel__body"><div class="chart-box"><canvas id="chartSource"></canvas></div></div>
+  </div>
+</div>
+
+<div class="chart-grid">
+  <div class="panel">
+    <div class="panel__head"><h2>Application funnel</h2></div>
+    <div class="panel__body"><div class="chart-box"><canvas id="chartFunnel"></canvas></div></div>
+  </div>
+  <div class="panel">
+    <div class="panel__head"><h2>Leads by destination</h2></div>
+    <div class="panel__body"><div class="chart-box"><canvas id="chartCountry"></canvas></div></div>
+  </div>
+</div>
+
+<div class="chart-grid">
+  <div class="panel">
+    <div class="panel__head"><h2>Counsellor performance</h2></div>
+    <div class="panel__body"><div class="chart-box"><canvas id="chartCounsellors"></canvas></div></div>
+  </div>
+  <div class="panel">
+    <div class="panel__head"><h2>Monthly leads</h2></div>
+    <div class="panel__body"><div class="chart-box"><canvas id="chartMonthly"></canvas></div></div>
+  </div>
+</div>
+
+<div class="chart-grid">
+  <div class="panel">
+    <div class="panel__head"><h2>Recent leads</h2>
+      <a class="btn btn--sm btn--secondary" href="{% url 'dashboard:lead_list' %}">View all</a></div>
+    <div class="panel__body panel__body--flush"><div class="table-wrap" style="border:0;box-shadow:none">
+      <table class="data"><thead><tr><th>Name</th><th>Phone</th><th>Source</th><th>Status</th><th>Created</th></tr></thead>
+      <tbody>{% for lead in recent_leads %}
+        <tr><td><a href="{% url 'dashboard:lead_detail' lead.pk %}">{{ lead.full_name }}</a></td>
+          <td>{{ lead.phone }}</td><td class="small">{{ lead.get_source_display }}</td>
+          <td><span class="badge badge--{{ lead.status|status_class }}">{{ lead.get_status_display }}</span></td>
+          <td class="small">{{ lead.created_at|date:"d M, g:i A" }}</td></tr>
+      {% empty %}<tr><td colspan="5" class="muted">No leads yet.</td></tr>{% endfor %}</tbody></table>
+    </div></div>
+  </div>
+
+  <div class="panel panel--gold">
+    <div class="panel__head"><h2>Requires attention</h2></div>
+    <div class="panel__body">
+      <h3 style="font-size:14px">Overdue leads</h3>
+      <ul class="stack" style="list-style:none;padding:0;margin:0 0 18px">
+        {% for lead in attention.overdue_leads %}
+        <li class="small"><a href="{% url 'dashboard:lead_detail' lead.pk %}">{{ lead.full_name }}</a>
+          — no activity since {{ lead.last_activity_at|date:"d M" }}</li>
+        {% empty %}<li class="small muted">Nothing overdue. Good work.</li>{% endfor %}
+      </ul>
+      <h3 style="font-size:14px">Documents awaiting review</h3>
+      <ul class="stack" style="list-style:none;padding:0;margin:0 0 18px">
+        {% for d in attention.pending_documents %}
+        <li class="small">{{ d.student.full_name }} — {{ d.get_document_type_display }}</li>
+        {% empty %}<li class="small muted">Queue is clear.</li>{% endfor %}
+      </ul>
+      <h3 style="font-size:14px">Deadlines within 14 days</h3>
+      <ul class="stack" style="list-style:none;padding:0;margin:0">
+        {% for a in attention.deadlines %}
+        <li class="small"><a href="{% url 'dashboard:application_detail' a.pk %}">{{ a.reference_no }}</a>
+          — {{ a.deadline|date:"d M Y" }}</li>
+        {% empty %}<li class="small muted">No imminent deadlines.</li>{% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+{% endblock %}

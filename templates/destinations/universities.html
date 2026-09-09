@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-hero"><div class="container">
+  {% include "includes/breadcrumbs.html" %}
+  <span class="eyebrow">{{ country.name }}</span><h1>Universities in {{ country.name }}</h1></div></section>
+<section class="section"><div class="container"><div class="grid grid--3">
+  {% for uni in universities %}
+  <article class="card"><div class="card__body">
+    <h3 class="card__title"><a href="{{ uni.get_absolute_url }}">{{ uni.name }}</a></h3>
+    <div class="card__meta"><span>📍 {{ uni.city }}</span>
+      {% if uni.world_ranking %}<span>🏅 #{{ uni.world_ranking }}</span>{% endif %}</div>
+    <div class="card__foot"><a class="btn btn--sm btn--secondary" href="{{ uni.get_absolute_url }}">View</a></div>
+  </div></article>
+  {% empty %}<div class="empty-state">No universities added yet.</div>{% endfor %}
+</div></div></section>
+{% endblock %}

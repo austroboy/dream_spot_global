@@ -1,0 +1,60 @@
+{% extends "portal/base_portal.html" %}
+{% load dsg %}
+{% block portal_title %}{{ application.reference_no }}{% endblock %}
+{% block portal_content %}
+<div class="grid grid--sidebar">
+  <div>
+    <div class="form-card mb-32">
+      <h2>{{ application.course.title }}</h2>
+      <p class="muted">{{ application.university.name }} — {{ application.university.country.name }}</p>
+      <div class="progress mb-24"><div class="progress__bar" style="width:{{ application.progress_percent }}%"></div></div>
+      <div class="timeline">
+        {% for stage in application.timeline %}
+        <div class="timeline__item {% if stage.done %}is-done{% elif stage.current %}is-current{% endif %}">
+          <div class="timeline__title">{{ stage.label }}</div>
+          {% if stage.current %}<div class="timeline__meta">{{ application.sub_status|default:"In progress" }}</div>{% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    {% if history %}
+    <div class="form-card">
+      <h2>Update history</h2>
+      <div class="table-wrap"><table class="data">
+        <thead><tr><th>Date</th><th>Change</th><th>Note</th></tr></thead>
+        <tbody>{% for h in history %}
+          <tr><td class="small">{{ h.created_at|date:"d M Y" }}</td>
+            <td>{{ h.to_stage|title }}</td><td class="small muted">{{ h.note|default:"—" }}</td></tr>
+        {% endfor %}</tbody></table></div>
+    </div>
+    {% endif %}
+  </div>
+
+  <aside class="stack">
+    <div class="form-card">
+      <h3>Details</h3>
+      <dl class="def-list">
+        <dt>Reference</dt><dd>{{ application.reference_no }}</dd>
+        <dt>Intake</dt><dd>{{ application.intake|default:"—" }}</dd>
+        <dt>Stage</dt><dd>{{ application.get_stage_display }}</dd>
+        <dt>Visa</dt><dd>{{ application.get_visa_status_display }}</dd>
+        {% if application.deadline %}<dt>Deadline</dt><dd>{{ application.deadline|date:"d M Y" }}</dd>{% endif %}
+        {% if application.assigned_officer %}<dt>Officer</dt><dd>{{ application.assigned_officer.full_name }}</dd>{% endif %}
+      </dl>
+    </div>
+    <div class="form-card">
+      <h3>Documents</h3>
+      {% if documents %}
+      <ul class="stack" style="list-style:none;padding:0;margin:0">
+        {% for d in documents %}
+        <li class="small row row--between">{{ d.get_document_type_display }}
+          <span class="badge badge--{{ d.status|status_class }}">{{ d.get_status_display }}</span></li>
+        {% endfor %}
+      </ul>
+      {% else %}<p class="small muted">No documents linked to this application.</p>{% endif %}
+      <a class="btn btn--secondary btn--block mt-24" href="{% url 'portal:documents' %}">Manage documents</a>
+    </div>
+  </aside>
+</div>
+{% endblock %}

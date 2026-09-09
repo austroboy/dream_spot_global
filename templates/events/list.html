@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-hero"><div class="container">
+  {% include "includes/breadcrumbs.html" %}
+  <span class="eyebrow">Events</span><h1>Education fairs, seminars &amp; webinars</h1>
+  <p>Meet university representatives and our counsellors in person or online.</p></div></section>
+<section class="section"><div class="container">
+  <div class="tabs">
+    <a class="{% if tab != 'past' %}is-active{% endif %}" href="?tab=upcoming">Upcoming</a>
+    <a class="{% if tab == 'past' %}is-active{% endif %}" href="?tab=past">Past events</a>
+  </div>
+  <div class="grid grid--3">
+    {% for event in page_obj %}
+    <article class="card">
+      <div class="card__media card__media--wide {% if not event.banner %}card__media--placeholder{% endif %}">
+        {% if event.banner %}<img src="{{ event.banner.url }}" alt="{{ event.title }}" loading="lazy">{% endif %}
+      </div>
+      <div class="card__body">
+        <div class="row" style="gap:8px">
+          <span class="badge badge--gold">{{ event.get_event_type_display }}</span>
+          {% if event.is_online %}<span class="badge badge--info">Online</span>{% endif %}
+        </div>
+        <h3 class="card__title"><a href="{{ event.get_absolute_url }}">{{ event.title }}</a></h3>
+        <div class="card__meta"><span>📅 {{ event.start_datetime|date:"d M Y, g:i A" }}</span></div>
+        <div class="card__meta"><span>📍 {{ event.venue|default:"Online" }}</span></div>
+        <div class="card__foot">
+          <a class="btn btn--sm {% if event.registration_open %}btn--primary{% else %}btn--secondary{% endif %}"
+             href="{{ event.get_absolute_url }}">
+             {% if event.registration_open %}Register free{% else %}View details{% endif %}</a>
+          {% if event.registration_open %}<span class="small muted">{{ event.seats_left }} seats left</span>{% endif %}
+        </div>
+      </div>
+    </article>
+    {% empty %}<div class="empty-state" style="grid-column:1/-1"><h3>No {{ tab }} events</h3>
+      <p>Follow us on Facebook to hear about the next one first.</p></div>{% endfor %}
+  </div>
+  {% include "includes/pagination.html" %}
+</div></section>
+{% endblock %}

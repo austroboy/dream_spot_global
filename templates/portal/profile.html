@@ -1,0 +1,53 @@
+{% extends "portal/base_portal.html" %}
+{% block portal_title %}My profile{% endblock %}
+{% block portal_content %}
+<div class="form-card mb-32">
+  <div class="row row--between mb-16">
+    <h2 style="margin:0">Profile completeness</h2><strong>{{ profile.completeness }}%</strong>
+  </div>
+  <div class="progress"><div class="progress__bar" style="width:{{ profile.completeness }}%"></div></div>
+</div>
+
+<form method="post" enctype="multipart/form-data" class="form-card mb-32">
+  {% csrf_token %}
+  <h2>Personal details</h2>
+  <div class="form-grid">
+    {% for field in user_form.visible_fields %}{% include "includes/field.html" with field=field %}{% endfor %}
+  </div>
+  <h2 class="mt-24">Student details</h2>
+  <div class="form-grid">
+    {% for field in form.visible_fields %}
+      {% if field.name == "preferred_destinations" or field.name == "visa_refusal_note" %}
+        {% include "includes/field.html" with field=field wrapper_class="field--full" %}
+      {% else %}
+        {% include "includes/field.html" with field=field %}
+      {% endif %}
+    {% endfor %}
+  </div>
+  <button class="btn btn--primary" type="submit" name="save_profile">Save profile</button>
+</form>
+
+<div class="form-card">
+  <h2>Academic history</h2>
+  {% if records %}
+  <div class="table-wrap mb-24"><table class="data">
+    <thead><tr><th>Level</th><th>Institution</th><th>Board / University</th><th>Result</th><th>Year</th><th></th></tr></thead>
+    <tbody>{% for r in records %}
+      <tr><td>{{ r.level }}</td><td>{{ r.institution }}</td><td>{{ r.board_or_university }}</td>
+        <td>{{ r.result }}</td><td>{{ r.passing_year }}</td>
+        <td><a class="btn btn--sm btn--ghost" href="{% url 'portal:delete_record' r.pk %}"
+               data-confirm="Remove this academic record?">Remove</a></td></tr>
+    {% endfor %}</tbody></table></div>
+  {% endif %}
+  <form method="post" action="{% url 'portal:add_record' %}">
+    {% csrf_token %}
+    <div class="form-grid">
+      {% for field in record_form.visible_fields %}{% include "includes/field.html" with field=field %}{% endfor %}
+    </div>
+    <button class="btn btn--secondary" type="submit">Add record</button>
+  </form>
+</div>
+
+<p class="small muted mt-24">
+  You can <a href="{% url 'portal:export' %}">download a copy of your data</a> at any time.</p>
+{% endblock %}

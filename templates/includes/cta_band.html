@@ -1,0 +1,27 @@
+{% load dsg %}
+<section class="section">
+  <div class="container">
+    <div class="cta-band reveal">
+      <div class="cta-band__inner">
+        <div>
+          <span class="eyebrow">Free of charge</span>
+          <h2>{{ heading|default:"Start your study abroad journey today" }}</h2>
+          <p>{{ subheading|default:"Speak to a certified counsellor about your profile, budget and destination. No obligation, no hidden fees." }}</p>
+          <div class="row">
+            <a class="btn btn--primary" href="{% url 'appointments:book' %}">Book Free Counselling</a>
+            <a class="btn btn--outline-light" href="{% url 'leads:assessment' %}">Free Profile Assessment</a>
+          </div>
+        </div>
+        <div class="cta-form" id="enquiry">
+          <h3>Request a call back</h3>
+          <form method="post" action="{% url 'core:quick_enquiry' %}">
+            {% csrf_token %}
+            <input type="hidden" name="lead_source" value="{{ lead_source|default:'homepage_cta' }}">
+            {% include "includes/form.html" with form=quick_form %}
+            <button type="submit" class="btn btn--primary btn--block">Request a call back</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

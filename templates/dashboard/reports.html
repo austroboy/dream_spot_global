@@ -1,0 +1,63 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block page_title %}Reports{% endblock %}
+{% block dash_content %}
+<form class="toolbar" method="get">
+  <select name="range" onchange="this.form.submit()">
+    <option value="7" {% if preset == "7" %}selected{% endif %}>Last 7 days</option>
+    <option value="30" {% if preset == "30" %}selected{% endif %}>Last 30 days</option>
+    <option value="90" {% if preset == "90" %}selected{% endif %}>Last 90 days</option>
+    <option value="365" {% if preset == "365" %}selected{% endif %}>Last 12 months</option>
+  </select>
+  <span class="small muted">{{ start|date:"d M Y" }} → {{ end|date:"d M Y" }}</span>
+  <a class="btn btn--secondary btn--sm" href="?range={{ preset }}&export=csv">Export CSV</a>
+</form>
+
+<div class="kpis">
+  <div class="kpi"><div class="kpi__label">Total leads</div><div class="kpi__value">{{ report.total_leads }}</div></div>
+  <div class="kpi"><div class="kpi__label">Converted</div><div class="kpi__value">{{ report.converted }}</div></div>
+  <div class="kpi"><div class="kpi__label">Conversion rate</div><div class="kpi__value">{{ report.conversion_rate }}%</div></div>
+  <div class="kpi"><div class="kpi__label">Visa success</div><div class="kpi__value">{{ report.visa_rate }}%</div>
+    <div class="kpi__delta">{{ report.visa_granted }} of {{ report.visa_total }} decided</div></div>
+</div>
+
+<div class="chart-grid">
+  <div class="panel">
+    <div class="panel__head"><h2>Lead source performance</h2></div>
+    <div class="panel__body panel__body--flush"><div class="table-wrap" style="border:0;box-shadow:none">
+      <table class="data"><thead><tr><th>Source</th><th>Leads</th><th>Converted</th><th>Rate</th></tr></thead>
+      <tbody>{% for r in report.source_rows %}
+        <tr><td>{{ r.label }}</td><td>{{ r.count }}</td><td>{{ r.won }}</td><td>{{ r.rate }}%</td></tr>
+      {% empty %}<tr><td colspan="4" class="muted small">No data in this period.</td></tr>{% endfor %}
+      </tbody></table></div></div>
+  </div>
+  <div class="panel">
+    <div class="panel__head"><h2>Counsellor performance</h2></div>
+    <div class="panel__body panel__body--flush"><div class="table-wrap" style="border:0;box-shadow:none">
+      <table class="data"><thead><tr><th>Counsellor</th><th>Leads</th><th>Converted</th><th>Rate</th></tr></thead>
+      <tbody>{% for r in report.counsellor_rows %}
+        <tr><td>{{ r.label }}</td><td>{{ r.count }}</td><td>{{ r.won }}</td><td>{{ r.rate }}%</td></tr>
+      {% empty %}<tr><td colspan="4" class="muted small">No counsellors yet.</td></tr>{% endfor %}
+      </tbody></table></div></div>
+  </div>
+</div>
+
+<div class="chart-grid">
+  <div class="panel">
+    <div class="panel__head"><h2>Applications by destination</h2></div>
+    <div class="panel__body panel__body--flush"><div class="table-wrap" style="border:0;box-shadow:none">
+      <table class="data"><thead><tr><th>Destination</th><th>Applications</th><th>Visas granted</th></tr></thead>
+      <tbody>{% for r in report.destination_rows %}
+        <tr><td>{{ r.label }}</td><td>{{ r.count }}</td><td>{{ r.won }}</td></tr>
+      {% endfor %}</tbody></table></div></div>
+  </div>
+  <div class="panel">
+    <div class="panel__head"><h2>Applications by intake</h2></div>
+    <div class="panel__body panel__body--flush"><div class="table-wrap" style="border:0;box-shadow:none">
+      <table class="data"><thead><tr><th>Intake</th><th>Applications</th></tr></thead>
+      <tbody>{% for r in report.intake_rows %}
+        <tr><td>{{ r.label }}</td><td>{{ r.count }}</td></tr>
+      {% empty %}<tr><td colspan="2" class="muted small">No applications yet.</td></tr>{% endfor %}
+      </tbody></table></div></div>
+  </div>
+</div>
+{% endblock %}

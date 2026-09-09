@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="section"><div class="container text-center" style="max-width:560px">
+  <span class="eyebrow">Error 404</span><h1>We could not find that page</h1>
+  <p class="muted">The link may be broken or the page may have moved.</p>
+  <div class="row" style="justify-content:center">
+    <a class="btn btn--primary" href="{% url 'core:home' %}">Back to homepage</a>
+    <a class="btn btn--secondary" href="{% url 'core:contact' %}">Contact us</a>
+  </div>
+</div></section>
+{% endblock %}

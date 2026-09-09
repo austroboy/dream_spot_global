@@ -1,0 +1,23 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% block page_title %}Roles &amp; permissions{% endblock %}
+{% block dash_content %}
+<div class="panel">
+  <div class="panel__head"><h2>Permission matrix</h2>
+    <span class="small muted">Defined in code (SRS §12.2) — Administrators always have full access.</span></div>
+  <div class="panel__body panel__body--flush"><div class="table-wrap" style="border:0;box-shadow:none">
+    <table class="data matrix">
+      <thead><tr><th>Capability</th>{% for value, label in roles %}<th>{{ label }}</th>{% endfor %}</tr></thead>
+      <tbody>{% for row in matrix %}
+        <tr><td><strong>{{ row.capability }}</strong></td>
+          {% for value, label in roles %}
+            <td>{% if row.roles|default_if_none:"" %}{% endif %}
+              {% for key, allowed in row.roles.items %}{% if key == value %}
+                {% if allowed %}<span class="tick">✓</span>{% else %}<span class="cross">✕</span>{% endif %}
+              {% endif %}{% endfor %}</td>
+          {% endfor %}
+        </tr>
+      {% endfor %}</tbody>
+    </table>
+  </div></div>
+</div>
+{% endblock %}

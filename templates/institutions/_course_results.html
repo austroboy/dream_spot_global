@@ -1,0 +1,12 @@
+<div class="grid grid--2" id="course-results">
+  {% for course in page_obj %}
+    {% include "includes/card_course.html" with course=course %}
+  {% empty %}
+    <div class="empty-state" style="grid-column:1/-1">
+      <h3>No courses match those filters</h3>
+      <p>Try widening your search, or let a counsellor build a shortlist for you.</p>
+      <a class="btn btn--primary" href="{% url 'appointments:book' %}">Ask a counsellor</a>
+    </div>
+  {% endfor %}
+</div>
+{% include "includes/pagination.html" %}

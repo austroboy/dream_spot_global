@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-hero"><div class="container">
+  <span class="eyebrow">Your result</span><h1>Indicative assessment for {{ lead.full_name }}</h1>
+  <p>This is a guide, not a decision. Your counsellor will refine it with you.</p></div></section>
+
+<section class="section"><div class="container grid grid--sidebar">
+  <div>
+    <div class="form-card mb-32">
+      <div class="row row--between mb-16">
+        <h2 style="margin:0">Eligibility score</h2>
+        <span class="stat__value" style="font-size:34px">{{ result.eligibility_score }}<span>/100</span></span>
+      </div>
+      <div class="progress"><div class="progress__bar" style="width:{{ result.eligibility_score }}%"></div></div>
+    </div>
+
+    <div class="grid grid--2 mb-32">
+      <div class="form-card">
+        <h3>Matched destinations</h3>
+        {% if result.matched_destinations %}
+        <div class="row">{% for d in result.matched_destinations %}<span class="chip chip--active">{{ d }}</span>{% endfor %}</div>
+        {% else %}<p class="small muted">We will confirm these after reviewing your documents.</p>{% endif %}
+      </div>
+      <div class="form-card">
+        <h3>Needs review</h3>
+        {% if result.needs_review %}
+        <div class="row">{% for d in result.needs_review %}<span class="chip">{{ d }}</span>{% endfor %}</div>
+        <p class="small muted mt-24">These need a higher English score or an alternative pathway.</p>
+        {% else %}<p class="small muted">Nothing flagged — good news.</p>{% endif %}
+      </div>
+    </div>
+
+    {% if result.strengths %}
+    <div class="form-card mb-32"><h3>Your strengths</h3>
+      <ul>{% for s in result.strengths %}<li>{{ s }}</li>{% endfor %}</ul></div>
+    {% endif %}
+
+    <div class="form-card mb-32"><h3>Recommended next steps</h3>
+      <div class="timeline">{% for a in result.recommended_actions %}
+        <div class="timeline__item is-current"><div class="timeline__title">{{ a }}</div></div>
+      {% endfor %}</div>
+    </div>
+
+    {% if recommended %}
+    <h2>Courses that may suit you</h2>
+    <div class="grid grid--2">{% for c in recommended %}{% include "includes/card_course.html" with course=c %}{% endfor %}</div>
+    {% endif %}
+  </div>
+
+  <aside class="stack">
+    <div class="form-card">
+      <span class="eyebrow">Next step</span>
+      <h3>Talk it through with a counsellor</h3>
+      <p class="small muted">A 30-minute free session turns this summary into a real plan.</p>
+      <a class="btn btn--primary btn--block" href="{% url 'appointments:book' %}">Book free counselling</a>
+    </div>
+    <div class="form-card">
+      <h3>A copy is in your inbox</h3>
+      <p class="small muted">We emailed this summary to {{ lead.email }}.</p>
+    </div>
+  </aside>
+</div></section>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-hero"><div class="container">
+  {% include "includes/breadcrumbs.html" %}
+  {% if post.category %}<span class="eyebrow">{{ post.category.name }}</span>{% endif %}
+  <h1>{{ post.title }}</h1>
+  <p>{{ post.published_at|date:"d M Y" }} • {{ post.reading_time }} min read
+    {% if post.author %}• {{ post.author.get_full_name|default:post.author.username }}{% endif %}</p>
+</div></section>
+<section class="section"><div class="container grid grid--sidebar">
+  <article>
+    {% if post.featured_image %}<img src="{{ post.featured_image.url }}" alt="{{ post.title }}"
+      style="border-radius:var(--radius-md);margin-bottom:28px" width="900" height="506">{% endif %}
+    <div class="prose">{{ post.body|linebreaks }}</div>
+    {% if post.tags.all %}
+    <div class="row mt-24">{% for t in post.tags.all %}<a class="chip" href="{% url 'blog:tag' t.slug %}">#{{ t.name }}</a>{% endfor %}</div>
+    {% endif %}
+  </article>
+  <aside class="stack">
+    <div class="form-card">
+      <h3>Need personal advice?</h3>
+      <p class="small muted">Book a free session with a counsellor who knows your destination.</p>
+      <a class="btn btn--primary btn--block" href="{% url 'appointments:book' %}">Book free counselling</a>
+    </div>
+    {% if related %}
+    <div class="form-card"><h3>Related reading</h3>
+      <ul style="list-style:none;padding:0;margin:0" class="stack">
+        {% for r in related %}<li><a href="{{ r.get_absolute_url }}">{{ r.title }}</a></li>{% endfor %}
+      </ul></div>
+    {% endif %}
+  </aside>
+</div></section>
+{% endblock %}
+{% block schema %}
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Article","headline":"{{ post.title|escapejs }}",
+"datePublished":"{{ post.published_at|date:'c' }}",
+"author":{"@type":"Organization","name":"Dream Spot Global"}}
+</script>
+{% endblock %}

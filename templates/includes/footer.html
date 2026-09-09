@@ -1,0 +1,65 @@
+<footer class="footer">
+  <div class="container">
+    <div class="footer__grid">
+      <div class="footer__brand">
+        {% if site.logo %}<img src="{{ site.logo.url }}" alt="{{ site.company_name }}">
+        {% else %}<h4 style="font-size:22px">Dream Spot Global</h4>{% endif %}
+        <p style="font-size:14.5px">{{ site.about_short|default:"Dream Spot Global is a study abroad education consultancy based in Uttara, Dhaka. We guide Bangladeshi students from first counselling session to departure day." }}</p>
+        <div class="footer__socials">
+          {% for name, url, icon in site.social_links %}
+            <a href="{{ url }}" target="_blank" rel="noopener" aria-label="{{ name }}">{{ name|slice:":1" }}</a>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div>
+        <h4>Destinations</h4>
+        <ul>
+          {% for c in nav_countries %}
+            <li><a href="{{ c.get_absolute_url }}">Study in {{ c.name }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <div>
+        <h4>Quick links</h4>
+        <ul>
+          <li><a href="{% url 'services:list' %}">Our services</a></li>
+          <li><a href="{% url 'institutions:course_list' %}">Find a course</a></li>
+          <li><a href="{% url 'scholarships:list' %}">Scholarships</a></li>
+          <li><a href="{% url 'events:list' %}">Events</a></li>
+          <li><a href="{% url 'leads:assessment' %}">Free assessment</a></li>
+          <li><a href="{% url 'faqs:list' %}">FAQ</a></li>
+          <li><a href="{% url 'blog:list' %}">Blog</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>Get in touch</h4>
+        <ul class="footer__contact">
+          <li><span>📍</span><span>{{ site.address|default:"House 21, Road 01, Sector 9, Uttara, Dhaka, Bangladesh" }}</span></li>
+          <li><span>☎</span><span>
+            <a href="tel:{{ site.phone_primary }}">{{ site.phone_primary|default:"+880 1410-157209" }}</a><br>
+            {% if site.phone_secondary %}<a href="tel:{{ site.phone_secondary }}">{{ site.phone_secondary }}</a>{% endif %}
+          </span></li>
+          <li><span>✉</span><a href="mailto:{{ site.email }}">{{ site.email|default:"dreamspotglobal@gmail.com" }}</a></li>
+          {% if site.office_hours %}<li><span>🕘</span><span>{{ site.office_hours }}</span></li>{% endif %}
+        </ul>
+        <form class="newsletter-form" method="post" action="{% url 'core:newsletter' %}">
+          {% csrf_token %}
+          <input type="email" name="email" placeholder="Subscribe to our newsletter" required aria-label="Email address">
+          <button class="btn btn--primary btn--sm" type="submit">Join</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <span>© {% now "Y" %} {{ site.company_name|default:"Dream Spot Global" }}. All rights reserved.</span>
+      <span class="row" style="gap:18px">
+        <a href="/privacy-policy/">Privacy Policy</a>
+        <a href="/terms/">Terms of Use</a>
+        <a href="/disclaimer/">Disclaimer</a>
+      </span>
+    </div>
+  </div>
+</footer>

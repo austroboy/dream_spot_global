@@ -1,0 +1,87 @@
+{% load static dsg %}<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ meta_title|default:"Dashboard" }} — Dream Spot Global</title>
+  <meta name="robots" content="noindex, nofollow">
+  {% include "includes/favicon.html" %}
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/brand.css' %}">
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+<div class="dash">
+  <aside class="dash__side">
+    <a class="dash__brand" href="{% url 'core:home' %}">
+      {% if site.logo %}<img src="{{ site.logo.url }}" alt="">{% else %}<span>Dream Spot Global</span>{% endif %}
+    </a>
+
+    <div class="dash__navgroup">
+      <div class="dash__navlabel">Overview</div>
+      <a href="{% url 'dashboard:home' %}" class="{% if request.resolver_match.url_name == 'home' %}is-active{% endif %}">◧ Dashboard</a>
+      {% if perms_view_reports %}<a href="{% url 'dashboard:reports' %}" class="{% if request.resolver_match.url_name == 'reports' %}is-active{% endif %}">◫ Reports</a>{% endif %}
+    </div>
+
+    <div class="dash__navgroup">
+      <div class="dash__navlabel">Pipeline</div>
+      <a href="{% url 'dashboard:lead_list' %}" class="{% if 'lead' in request.resolver_match.url_name %}is-active{% endif %}">✉ Leads</a>
+      <a href="{% url 'dashboard:lead_kanban' %}">▤ Pipeline board</a>
+      <a href="{% url 'dashboard:student_list' %}" class="{% if 'student' in request.resolver_match.url_name %}is-active{% endif %}">☺ Students</a>
+      <a href="{% url 'dashboard:application_list' %}" class="{% if 'application' in request.resolver_match.url_name %}is-active{% endif %}">▣ Applications</a>
+      <a href="{% url 'dashboard:document_queue' %}" class="{% if 'document' in request.resolver_match.url_name %}is-active{% endif %}">◈ Documents</a>
+      <a href="{% url 'dashboard:appointment_list' %}" class="{% if 'appointment' in request.resolver_match.url_name %}is-active{% endif %}">◷ Appointments</a>
+      <a href="{% url 'dashboard:availability' %}">◔ Availability</a>
+      <a href="{% url 'dashboard:enquiries' %}">✎ Contact messages</a>
+    </div>
+
+    <div class="dash__navgroup">
+      <div class="dash__navlabel">Content</div>
+      {% for key, cfg in content_nav %}
+        <a href="{% url 'dashboard:content_list' key %}" class="{% if request.resolver_match.kwargs.key == key %}is-active{% endif %}">▸ {{ cfg.label }}</a>
+      {% endfor %}
+    </div>
+
+    {% if user.is_admin_role %}
+    <div class="dash__navgroup">
+      <div class="dash__navlabel">Administration</div>
+      <a href="{% url 'dashboard:user_list' %}" class="{% if 'user' in request.resolver_match.url_name %}is-active{% endif %}">⚿ Staff users</a>
+      <a href="{% url 'dashboard:roles' %}">⚖ Roles &amp; permissions</a>
+      <a href="{% url 'dashboard:newsletter' %}">✉ Newsletter</a>
+      <a href="{% url 'dashboard:settings' %}">⚙ Site settings</a>
+      <a href="{% url 'dashboard:audit' %}">◉ Audit log</a>
+    </div>
+    {% endif %}
+  </aside>
+
+  <div class="dash__main">
+    <header class="dash__top">
+      <button class="dash-toggle" aria-label="Toggle sidebar">☰</button>
+      <h1>{% block page_title %}{{ meta_title }}{% endblock %}</h1>
+      <form class="dash__search" method="get" action="{% url 'dashboard:lead_list' %}">
+        <input type="search" name="q" placeholder="Search leads by name, phone or email…" aria-label="Search">
+      </form>
+      <div class="dash__user">
+        <div style="text-align:right;line-height:1.2">
+          <div style="font-size:14px;font-weight:600">{{ user.get_full_name|default:user.username }}</div>
+          <div class="small muted">{{ user.display_role }}</div>
+        </div>
+        <div class="dash__avatar">{{ user.get_full_name|default:user.username|initials }}</div>
+        <a class="btn btn--ghost btn--sm" href="{% url 'accounts:logout' %}">Sign out</a>
+      </div>
+    </header>
+
+    {% if messages %}
+    <div class="alerts">
+      {% for message in messages %}<div class="alert alert--{{ message.tags }}">{{ message }}</div>{% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="dash__body">{% block dash_content %}{% endblock %}</div>
+  </div>
+</div>
+<script src="{% static 'js/main.js' %}"></script>
+{% block extra_js %}{% endblock %}
+<script src="{% static 'js/dashboard.js' %}"></script>
+</body>
+</html>

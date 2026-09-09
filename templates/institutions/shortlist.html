@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-hero"><div class="container">
+  <span class="eyebrow">Saved</span><h1>My shortlist</h1></div></section>
+<section class="section"><div class="container">
+  {% if items %}
+  <div class="grid grid--2">
+    {% for item in items %}{% if item.course %}{% include "includes/card_course.html" with course=item.course %}{% endif %}{% endfor %}
+  </div>
+  <div class="text-center mt-24">
+    <a class="btn btn--primary" href="{% url 'institutions:compare' %}?{% for i in items %}{% if i.course %}c={{ i.course.pk }}&{% endif %}{% endfor %}">Compare shortlisted courses</a>
+  </div>
+  {% else %}
+  <div class="empty-state"><h3>Your shortlist is empty</h3>
+    <p>Browse courses and tap “Shortlist” to save them here.</p>
+    <a class="btn btn--primary" href="{% url 'institutions:course_list' %}">Find courses</a></div>
+  {% endif %}
+</div></section>
+{% endblock %}
