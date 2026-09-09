@@ -86,7 +86,33 @@ WSGI_APPLICATION = "config.wsgi.application"
 ASGI_APPLICATION = "config.asgi.application"
 
 # --- Database (SRS 2.5) -----------------------------------------------------
-if env("POSTGRES_DB"):
+def _database_from_url(url):
+    """Parse a DATABASE_URL (Neon, Supabase, Railway, Heroku) into Django config."""
+    from urllib.parse import parse_qs, unquote, urlparse
+
+    parsed = urlparse(url)
+    query = parse_qs(parsed.query)
+    options = {}
+    sslmode = query.get("sslmode", ["require"])[0]
+    if sslmode:
+        options["sslmode"] = sslmode
+    if query.get("channel_binding"):
+        options["channel_binding"] = query["channel_binding"][0]
+    return {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": unquote(parsed.path.lstrip("/")),
+        "USER": unquote(parsed.username or ""),
+        "PASSWORD": unquote(parsed.password or ""),
+        "HOST": parsed.hostname or "",
+        "PORT": str(parsed.port or 5432),
+        "CONN_MAX_AGE": 0,          # serverless: never hold a connection open
+        "OPTIONS": options,
+    }
+
+
+if env("DATABASE_URL"):
+    DATABASES = {"default": _database_from_url(env("DATABASE_URL"))}
+elif env("POSTGRES_DB"):
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",

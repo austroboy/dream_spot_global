@@ -28,6 +28,8 @@ def _serialise(instance):
 
 @receiver(pre_save)
 def stamp_actor(sender, instance, **kwargs):
+    if kwargs.get("raw"):
+        return
     user = get_current_user()
     if user is None or not getattr(user, "is_authenticated", False):
         return
@@ -39,6 +41,8 @@ def stamp_actor(sender, instance, **kwargs):
 
 @receiver(post_save)
 def audit_save(sender, instance, created, **kwargs):
+    if kwargs.get("raw"):        # loaddata / fixtures — skip auditing
+        return
     name = sender.__name__
     if name in CACHE_BUSTERS:
         cache.delete_many(["site_settings", "global_nav", "homepage"])

@@ -5,7 +5,8 @@ __pycache__/
 .venv/
 venv/
 env/
-staticfiles/
+# staticfiles/ is committed on purpose — WhiteNoise serves it in production.
+# Re-run `python manage.py collectstatic --noinput` after changing CSS or JS.
 media/
 logs/*.log
 .coverage
@@ -14,3 +15,4 @@ htmlcov/
 .idea/
 .vscode/
 node_modules/
+data.json
