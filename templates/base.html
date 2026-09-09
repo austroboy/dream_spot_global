@@ -21,8 +21,9 @@
   {% include "includes/favicon.html" %}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'css/brand.css' %}">
+  <link rel="stylesheet" href="{% static 'css/premium.css' %}">
   {% block extra_css %}{% endblock %}
 
   {# JSON-LD: LocalBusiness (SRS SEO-04) #}
@@ -71,13 +72,18 @@
 <div class="floaters">
   {% if site.whatsapp_link %}
     <a class="fl-wa" href="{{ site.whatsapp_link }}" target="_blank" rel="noopener"
-       aria-label="Chat on WhatsApp" title="Chat on WhatsApp">✆</a>
+       aria-label="Chat on WhatsApp" title="Chat on WhatsApp">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2Zm5.8 14.16c-.24.68-1.4 1.3-1.95 1.35-.5.05-1.13.07-1.82-.11-.42-.11-.96-.29-1.65-.59-2.9-1.25-4.8-4.17-4.94-4.37-.15-.2-1.19-1.58-1.19-3.02 0-1.43.75-2.14 1.02-2.43.27-.29.58-.36.78-.36.19 0 .39 0 .56.01.18.01.42-.07.66.5.24.59.83 2.02.9 2.17.07.15.12.32.02.51-.09.2-.14.32-.28.49-.14.17-.29.38-.42.51-.14.14-.28.29-.12.57.16.29.72 1.19 1.55 1.92 1.06.95 1.96 1.24 2.24 1.38.28.15.44.12.6-.07.17-.2.69-.8.87-1.08.18-.29.36-.24.61-.14.24.09 1.55.73 1.82.86.27.14.44.2.51.32.07.11.07.66-.17 1.34Z"/></svg>
+    </a>
   {% endif %}
   <a class="fl-call" href="tel:{{ site.phone_primary|default:'+8801410157209' }}"
-     aria-label="Call Dream Spot Global" title="Call us">☎</a>
+     aria-label="Call Dream Spot Global" title="Call us">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24c1.12.37 2.33.57 3.57.57a1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1.02l-2.2 2.2Z"/></svg>
+  </a>
 </div>
 
 <script src="{% static 'js/main.js' %}" defer></script>
+<script src="{% static 'js/premium.js' %}" defer></script>
 {% block extra_js %}{% endblock %}
 </body>
 </html>

@@ -7,7 +7,9 @@
         <p style="font-size:14.5px">{{ site.about_short|default:"Dream Spot Global is a study abroad education consultancy based in Uttara, Dhaka. We guide Bangladeshi students from first counselling session to departure day." }}</p>
         <div class="footer__socials">
           {% for name, url, icon in site.social_links %}
-            <a href="{{ url }}" target="_blank" rel="noopener" aria-label="{{ name }}">{{ name|slice:":1" }}</a>
+          <a href="{{ url }}" target="_blank" rel="noopener" aria-label="{{ name }}">
+            {% if icon == "facebook" %}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 9h3V6h-3c-2.2 0-4 1.8-4 4v2H8v3h2v7h3v-7h3l1-3h-4v-2c0-.55.45-1 1-1Z"/></svg>{% elif icon == "instagram" %}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7.6A4.4 4.4 0 1 0 16.4 12 4.4 4.4 0 0 0 12 7.6Zm0 7.2A2.8 2.8 0 1 1 14.8 12 2.8 2.8 0 0 1 12 14.8ZM17.6 6a1 1 0 1 0 1 1 1 1 0 0 0-1-1ZM12 4.6c2.4 0 2.7 0 3.6.05a4.9 4.9 0 0 1 1.7.31 3 3 0 0 1 1.74 1.74 4.9 4.9 0 0 1 .31 1.7c.04.9.05 1.2.05 3.6s0 2.7-.05 3.6a4.9 4.9 0 0 1-.31 1.7 3 3 0 0 1-1.74 1.74 4.9 4.9 0 0 1-1.7.31c-.9.04-1.2.05-3.6.05s-2.7 0-3.6-.05a4.9 4.9 0 0 1-1.7-.31 3 3 0 0 1-1.74-1.74 4.9 4.9 0 0 1-.31-1.7C4.61 14.7 4.6 14.4 4.6 12s0-2.7.05-3.6a4.9 4.9 0 0 1 .31-1.7A3 3 0 0 1 6.7 4.96a4.9 4.9 0 0 1 1.7-.31c.9-.04 1.2-.05 3.6-.05Z"/></svg>{% elif icon == "linkedin" %}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.94 8.5H4.1V20h2.84ZM5.52 3.9a1.65 1.65 0 1 0 0 3.3 1.65 1.65 0 0 0 0-3.3ZM20 13.6c0-3.1-1.66-4.55-3.87-4.55a3.34 3.34 0 0 0-3 1.66h-.04V8.5H10.4V20h2.84v-5.7c0-1.5.29-2.96 2.15-2.96s1.85 1.72 1.85 3.05V20H20Z"/></svg>{% else %}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.6 7.2a2.5 2.5 0 0 0-1.76-1.77C18.27 5 12 5 12 5s-6.27 0-7.84.43A2.5 2.5 0 0 0 2.4 7.2 26 26 0 0 0 2 12a26 26 0 0 0 .4 4.8 2.5 2.5 0 0 0 1.76 1.77C5.73 19 12 19 12 19s6.27 0 7.84-.43a2.5 2.5 0 0 0 1.76-1.77A26 26 0 0 0 22 12a26 26 0 0 0-.4-4.8ZM10 15V9l5.2 3Z"/></svg>{% endif %}
+          </a>
           {% endfor %}
         </div>
       </div>

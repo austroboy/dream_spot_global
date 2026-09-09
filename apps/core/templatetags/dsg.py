@@ -48,6 +48,17 @@ def initials(value):
 
 
 @register.filter
+def monogram(value):
+    """Two-letter mark for image placeholders: 'United Kingdom' -> UK, 'Canada' -> CA."""
+    words = [w for w in str(value or "").split() if w[:1].isalnum()]
+    if len(words) >= 2:
+        return (words[0][0] + words[1][0]).upper()
+    if words:
+        return words[0][:2].upper()
+    return "DSG"
+
+
+@register.filter
 def status_class(status):
     return {
         "new": "info", "contacted": "info", "qualified": "warning",

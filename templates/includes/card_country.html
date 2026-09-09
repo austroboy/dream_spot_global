@@ -1,7 +1,11 @@
+{% load dsg %}
 <article class="card card--flag">
   <div class="card__media {% if not country.card_image %}card__media--placeholder{% endif %}">
     {% if country.card_image %}
       <img src="{{ country.card_image.url }}" alt="Study in {{ country.name }}" loading="lazy" width="600" height="375">
+    {% else %}
+      <span class="media-monogram">{{ country.name|monogram }}</span>
+      <span class="media-caption">Study in {{ country.name }}</span>
     {% endif %}
   </div>
   <div class="card__body">

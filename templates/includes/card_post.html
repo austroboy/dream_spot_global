@@ -1,7 +1,11 @@
+{% load dsg %}
 <article class="card">
   <div class="card__media card__media--wide {% if not post.featured_image %}card__media--placeholder{% endif %}">
     {% if post.featured_image %}
       <img src="{{ post.featured_image.url }}" alt="{{ post.title }}" loading="lazy" width="600" height="338">
+    {% else %}
+      <span class="media-monogram">{{ post.title|monogram }}</span>
+      {% if post.category %}<span class="media-caption">{{ post.category.name }}</span>{% endif %}
     {% endif %}
   </div>
   <div class="card__body">
