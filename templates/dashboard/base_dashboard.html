@@ -8,14 +8,22 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{% static 'css/brand.css' %}">
   <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+  <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
   {% block extra_css %}{% endblock %}
 </head>
 <body>
 <div class="dash">
+  <div class="dash__backdrop" hidden></div>
+
   <aside class="dash__side">
-    <a class="dash__brand" href="{% url 'core:home' %}">
-      {% if site.logo %}<img src="{{ site.logo.url }}" alt="">{% else %}<span>Dream Spot Global</span>{% endif %}
-    </a>
+    <div class="dash__sidehead">
+      <a class="dash__brand" href="{% url 'core:home' %}">
+        {% if site.logo %}<img src="{{ site.logo.url }}" alt="">{% else %}<span>Dream Spot Global</span>{% endif %}
+      </a>
+      <button type="button" class="dash__close" aria-label="Close menu">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.3 5.7 12 12l6.3 6.3-1.4 1.4L10.6 13.4 4.3 19.7 2.9 18.3 9.2 12 2.9 5.7l1.4-1.4 6.3 6.3 6.3-6.3z"/></svg>
+      </button>
+    </div>
 
     <div class="dash__navgroup">
       <div class="dash__navlabel">Overview</div>

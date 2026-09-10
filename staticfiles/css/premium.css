@@ -340,3 +340,10 @@ h1{font-size:clamp(34px,5vw,58px);line-height:1.06;}
   .hero__proof span{font-size:12.5px;}
   h1{font-size:clamp(30px,8vw,38px);}
 }
+
+/* Dropdown affordance on the desktop navigation */
+.nav__item:has(.megamenu) > .nav__link::after{
+  content:"";width:7px;height:7px;flex:none;margin-left:2px;
+  border-right:1.6px solid currentColor;border-bottom:1.6px solid currentColor;
+  transform:translateY(-2px) rotate(45deg);opacity:.6;
+}

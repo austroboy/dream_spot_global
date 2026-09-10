@@ -2,13 +2,82 @@
 (function () {
   "use strict";
 
-  // Mobile navigation
+  // ---- Mobile navigation drawer -------------------------------------------
   var toggle = document.querySelector(".nav-toggle");
   var nav = document.querySelector(".nav");
+  var backdrop = document.querySelector(".nav-backdrop");
+  var closeBtn = document.querySelector(".nav__close");
+  var MOBILE = "(max-width: 1080px)";
+
+  function isMobile() {
+    return window.matchMedia(MOBILE).matches;
+  }
+
+  function openNav() {
+    nav.classList.add("is-open");
+    if (backdrop) backdrop.hidden = false;
+    document.body.classList.add("nav-locked");
+    toggle.setAttribute("aria-expanded", "true");
+    if (closeBtn) closeBtn.focus();
+  }
+
+  function closeNav() {
+    nav.classList.remove("is-open");
+    if (backdrop) backdrop.hidden = true;
+    document.body.classList.remove("nav-locked");
+    toggle.setAttribute("aria-expanded", "false");
+    nav.querySelectorAll(".nav__item.is-expanded").forEach(function (item) {
+      item.classList.remove("is-expanded");
+      var link = item.querySelector(".nav__link");
+      if (link) link.setAttribute("aria-expanded", "false");
+    });
+  }
+
   if (toggle && nav) {
     toggle.addEventListener("click", function () {
-      var open = nav.classList.toggle("is-open");
-      toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      if (nav.classList.contains("is-open")) closeNav(); else openNav();
+    });
+    if (closeBtn) closeBtn.addEventListener("click", closeNav);
+    if (backdrop) backdrop.addEventListener("click", closeNav);
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && nav.classList.contains("is-open")) {
+        closeNav();
+        toggle.focus();
+      }
+    });
+
+    // Tapping a real link closes the drawer so the next page is not covered.
+    // Top-level links that own a submenu are accordion toggles, not navigation.
+    nav.querySelectorAll("a[href]").forEach(function (link) {
+      link.addEventListener("click", function () {
+        if (!isMobile()) return;
+        var item = link.closest(".nav__item");
+        var isAccordionToggle = link.classList.contains("nav__link") &&
+                                item && item.querySelector(".megamenu");
+        if (isAccordionToggle) return;
+        closeNav();
+      });
+    });
+
+    // Top-level items with a submenu become accordions on mobile
+    nav.querySelectorAll(".nav__item").forEach(function (item) {
+      var link = item.querySelector(".nav__link");
+      var submenu = item.querySelector(".megamenu");
+      if (!link || !submenu) return;
+      link.setAttribute("aria-expanded", "false");
+      link.addEventListener("click", function (e) {
+        if (!isMobile()) return;          // desktop keeps hover menus
+        e.preventDefault();
+        e.stopPropagation();
+        var expanded = item.classList.toggle("is-expanded");
+        link.setAttribute("aria-expanded", expanded ? "true" : "false");
+      });
+    });
+
+    // Never leave the drawer stuck open when rotating to a wide screen
+    window.addEventListener("resize", function () {
+      if (!isMobile() && nav.classList.contains("is-open")) closeNav();
     });
   }
 

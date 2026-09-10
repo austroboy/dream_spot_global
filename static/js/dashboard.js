@@ -4,8 +4,35 @@
 
   var toggle = document.querySelector(".dash-toggle");
   var side = document.querySelector(".dash__side");
+  var sideBackdrop = document.querySelector(".dash__backdrop");
+  var sideClose = document.querySelector(".dash__close");
+
+  function openSide() {
+    side.classList.add("is-open");
+    if (sideBackdrop) sideBackdrop.hidden = false;
+    document.body.classList.add("nav-locked");
+    toggle.setAttribute("aria-expanded", "true");
+  }
+  function closeSide() {
+    side.classList.remove("is-open");
+    if (sideBackdrop) sideBackdrop.hidden = true;
+    document.body.classList.remove("nav-locked");
+    toggle.setAttribute("aria-expanded", "false");
+  }
   if (toggle && side) {
-    toggle.addEventListener("click", function () { side.classList.toggle("is-open"); });
+    toggle.addEventListener("click", function () {
+      if (side.classList.contains("is-open")) closeSide(); else openSide();
+    });
+    if (sideClose) sideClose.addEventListener("click", closeSide);
+    if (sideBackdrop) sideBackdrop.addEventListener("click", closeSide);
+    side.querySelectorAll("a[href]").forEach(function (a) {
+      a.addEventListener("click", function () {
+        if (window.matchMedia("(max-width: 900px)").matches) closeSide();
+      });
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && side.classList.contains("is-open")) closeSide();
+    });
   }
 
   // Select-all checkbox for bulk actions
