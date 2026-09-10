@@ -8,6 +8,8 @@
   --navy-abyss:#071A38;
   --navy-deep:#0A2450;
   --gold-soft:#F7C46C;
+  /* Readable gold for text on light surfaces (WCAG AA at small sizes) */
+  --gold-text:#8F5C07;
   --gold-glow:rgba(242,165,38,.28);
   --hairline:rgba(255,255,255,.14);
   --glass-bg:rgba(255,255,255,.07);
@@ -253,6 +255,23 @@ h1{font-size:clamp(34px,5vw,58px);line-height:1.06;}
   position:relative;
 }
 .section--navy > .container{position:relative;z-index:2;}
+
+/* Sub-headings inherit the navy body colour, which is invisible on a navy
+   band. Every heading level on a dark surface must be light. */
+.section--navy h4,.section--navy h5,.section--navy h6,
+.hero h4,.hero h5,.page-hero h4,.page-hero h5,
+.cta-band__inner > div h1,.cta-band__inner > div h2,
+.cta-band__inner > div h3,.cta-band__inner > div h4{color:#fff;}
+.section--navy .step h4{color:#fff;}
+.section--navy p,.section--navy li{color:rgba(255,255,255,.82);}
+/* …but cards sitting on top of a dark band stay light-on-white */
+.section--navy .card,.section--navy .form-card,.section--navy .icon-card,
+.cta-band .cta-form{color:var(--ink);}
+.section--navy .card h1,.section--navy .card h2,.section--navy .card h3,
+.section--navy .card h4,.section--navy .form-card h3,.cta-band .cta-form h3,
+.section--navy .icon-card h3{color:var(--brand-navy);}
+.section--navy .card p,.section--navy .form-card p,.cta-band .cta-form p,
+.section--navy .icon-card p{color:var(--muted);}
 .step__num{
   background:linear-gradient(150deg,rgba(255,255,255,.14),rgba(255,255,255,.04));
   border:1px solid rgba(242,165,38,.42);color:var(--gold-soft);
@@ -347,3 +366,15 @@ h1{font-size:clamp(34px,5vw,58px);line-height:1.06;}
   border-right:1.6px solid currentColor;border-bottom:1.6px solid currentColor;
   transform:translateY(-2px) rotate(45deg);opacity:.6;
 }
+
+/* ---- Text contrast on light surfaces (WCAG AA) --------------------------- */
+/* Brand gold is a signal colour; at 12px on white it only reaches 2.8:1, so
+   text set in gold uses a darker tone while accents keep the bright hue. */
+.eyebrow{color:var(--gold-text);}
+.section--navy .eyebrow,.hero .eyebrow,.page-hero .eyebrow,
+.cta-band .eyebrow,.footer .eyebrow{color:var(--gold-soft);}
+.badge--gold{color:var(--gold-text);}
+.accordion__icon{color:var(--gold-text);}
+.icon-card__icon{color:var(--gold-text);}
+.marquee span{color:#6E7C93;}
+.media-caption{color:var(--gold-soft);}

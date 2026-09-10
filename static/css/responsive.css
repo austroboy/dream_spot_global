@@ -35,6 +35,7 @@ body{overflow-x:clip;}
 
 /* Drawer chrome — hidden on desktop, revealed inside the mobile panel */
 .nav__head,.nav__close,.nav-backdrop{display:none;}
+.nav__list{display:contents;}   /* desktop: wrapper disappears from layout */
 
 @media (max-width:1080px){
   /* A backdrop-filter on an ancestor creates a containing block for fixed
@@ -56,14 +57,21 @@ body{overflow-x:clip;}
     padding:0 0 32px;margin:0;border:0;border-radius:0;
     background:#fff;box-shadow:-24px 0 60px rgba(7,26,56,.32);
     transform:translateX(101%);transition:transform .3s var(--ease-out);
-    overflow-y:auto;overscroll-behavior:contain;z-index:120;
+    overflow:hidden;z-index:120;
   }
   .nav.is-open{transform:none;}
 
+  /* The header never scrolls; only the list below it does. Sticky positioning
+     inside a scrolling flex column is unreliable on mobile Safari. */
   .nav__head{
     display:flex;align-items:center;justify-content:space-between;gap:12px;
     padding:18px 20px;border-bottom:1px solid var(--line);
-    position:sticky;top:0;background:#fff;z-index:2;
+    background:#fff;flex:0 0 auto;
+  }
+  .nav__list{
+    display:block;flex:1 1 auto;min-height:0;
+    overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+    padding-bottom:28px;
   }
   .nav__head-brand{
     font-family:var(--font-head);font-weight:700;font-size:16px;
@@ -112,8 +120,10 @@ body{overflow-x:clip;}
   body.nav-locked .nav-toggle{opacity:0;pointer-events:none;}
 
   /* ---- General mobile ergonomics --------------------------------------- */
-  .topbar .container{justify-content:center;text-align:center;row-gap:2px;}
-  .topbar__socials{gap:10px;}
+  .topbar .container{justify-content:center;text-align:center;row-gap:4px;
+    padding-block:6px;}
+  .topbar__socials{display:none;}   /* the footer already carries the socials */
+  .topbar .row{justify-content:center;gap:14px;}
   .btn{min-height:48px;}
   .field__input{font-size:16px;}   /* stops iOS zooming on focus */
   .section{padding:52px 0;}
