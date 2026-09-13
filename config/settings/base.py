@@ -87,31 +87,60 @@ ASGI_APPLICATION = "config.asgi.application"
 
 # --- Database (SRS 2.5) -----------------------------------------------------
 def _database_from_url(url):
-    """Parse a DATABASE_URL (Neon, Supabase, Railway, Heroku) into Django config."""
+    """Parse a DATABASE_URL into Django config.
+
+    Supports PostgreSQL (Neon, Supabase, Railway, Heroku) and MySQL / MariaDB
+    (cPanel shared hosting), so the same codebase deploys to either.
+    """
     from urllib.parse import parse_qs, unquote, urlparse
 
     parsed = urlparse(url)
     query = parse_qs(parsed.query)
+    scheme = parsed.scheme.split("+")[0].lower()
+    is_mysql = scheme in ("mysql", "mariadb")
+
     options = {}
-    sslmode = query.get("sslmode", ["require"])[0]
-    if sslmode:
-        options["sslmode"] = sslmode
-    if query.get("channel_binding"):
-        options["channel_binding"] = query["channel_binding"][0]
-    return {
-        "ENGINE": "django.db.backends.postgresql",
+    if is_mysql:
+        options["charset"] = query.get("charset", ["utf8mb4"])[0]
+        # Fail loudly on bad data instead of silently truncating it
+        options["init_command"] = "SET sql_mode='STRICT_TRANS_TABLES'"
+        if query.get("ssl") == ["true"]:
+            options["ssl"] = {"ssl_mode": "REQUIRED"}
+    else:
+        sslmode = query.get("sslmode", ["require"])[0]
+        if sslmode:
+            options["sslmode"] = sslmode
+        if query.get("channel_binding"):
+            options["channel_binding"] = query["channel_binding"][0]
+
+    config = {
+        "ENGINE": "django.db.backends.mysql" if is_mysql
+                  else "django.db.backends.postgresql",
         "NAME": unquote(parsed.path.lstrip("/")),
         "USER": unquote(parsed.username or ""),
         "PASSWORD": unquote(parsed.password or ""),
-        "HOST": parsed.hostname or "",
-        "PORT": str(parsed.port or 5432),
-        "CONN_MAX_AGE": 0,          # serverless: never hold a connection open
+        # Some hosts expose MySQL only over a unix socket; Django treats a HOST
+        # beginning with "/" as a socket path.
+        "HOST": (query.get("unix_socket", [""])[0] or parsed.hostname
+                 or ("localhost" if is_mysql else "")),
+        "PORT": str(parsed.port or (3306 if is_mysql else 5432)),
+        "CONN_MAX_AGE": int(env("CONN_MAX_AGE", "60" if is_mysql else "0")),
         "OPTIONS": options,
     }
+    if is_mysql:
+        # Used only when running the test suite
+        config["TEST"] = {"CHARSET": "utf8mb4", "COLLATION": "utf8mb4_unicode_ci"}
+    return config
 
 
 if env("DATABASE_URL"):
     DATABASES = {"default": _database_from_url(env("DATABASE_URL"))}
+elif env("MYSQL_DB"):
+    DATABASES = {"default": _database_from_url(
+        "mysql://{user}:{pw}@{host}:{port}/{name}".format(
+            user=env("MYSQL_USER", ""), pw=env("MYSQL_PASSWORD", ""),
+            host=env("MYSQL_HOST", "localhost"), port=env("MYSQL_PORT", "3306"),
+            name=env("MYSQL_DB")))}
 elif env("POSTGRES_DB"):
     DATABASES = {
         "default": {

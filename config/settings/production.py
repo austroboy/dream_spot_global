@@ -1,9 +1,13 @@
+import os
+
 from .base import *  # noqa
 
 DEBUG = False
 
 # Vercel injects VERCEL=1 into the runtime environment.
 ON_VERCEL = bool(env("VERCEL")) or bool(env("VERCEL_URL"))
+# Phusion Passenger (cPanel "Setup Python App") sets this.
+ON_PASSENGER = "PASSENGER_BASE_URI" in os.environ or bool(env("PASSENGER_APP_ENV"))
 
 ALLOWED_HOSTS = [h for h in env("ALLOWED_HOSTS", "").split(",") if h]
 if ON_VERCEL:
@@ -39,6 +43,11 @@ STORAGES = {
 WHITENOISE_MAX_AGE = 31536000
 
 # --- Media ------------------------------------------------------------------
+# On a normal server (cPanel, VPS) the filesystem is writable, so uploads
+# persist and Django serves them through a URL pattern. Turn this off if a web
+# server or CDN is configured to serve /media/ directly.
+SERVE_MEDIA = env_bool("SERVE_MEDIA", not ON_VERCEL)
+
 # Serverless platforms give you a read-only filesystem apart from /tmp, so
 # uploads survive only for the life of a single lambda instance. Point
 # MEDIA_ROOT at /tmp there so uploads do not crash, and move to object storage
